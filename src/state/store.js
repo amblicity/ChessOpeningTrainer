@@ -4,17 +4,40 @@ const middlewares = [
   /* other middlewares */
 ];
 
-const createDebugger = require('redux-flipper').default;
-middlewares.push(createDebugger());
+if (__DEV__) {
+  const createDebugger = require('redux-flipper').default;
+  middlewares.push(createDebugger());
+}
 
 import { combineReducers } from 'redux';
 
-export const appReducer = (state = {}, action) => {
+const initialAppState = {
+  initialized: false,
+};
+
+export const appReducer = (state = initialAppState, action) => {
   switch (action.type) {
-    case 'app/init': {
+    case 'app/initialize': {
       return {
         ...state,
-        app: [...state.app],
+        initialized: action.payload,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
+const initialCurrentPlayState = {
+  scenario: null,
+};
+
+export const currentPlayReducer = (state = initialCurrentPlayState, action) => {
+  switch (action.type) {
+    case 'currentPlay/setScenario': {
+      return {
+        ...state,
+        scenario: action.payload,
       };
     }
     default:
@@ -23,8 +46,8 @@ export const appReducer = (state = {}, action) => {
 };
 
 const rootReducer = combineReducers({
-  // Define a top-level state field named `todos`, handled by `todosReducer`
   app: appReducer,
+  currentPlay: currentPlayReducer,
 });
 
 export const store = createStore(rootReducer, applyMiddleware(...middlewares));

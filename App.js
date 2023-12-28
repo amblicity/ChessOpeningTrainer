@@ -6,6 +6,7 @@ import { store } from './src/state/store';
 
 export const App = () => {
   console.log('Initial state: ', store.getState());
+  store.dispatch({ type: 'app/initialize', payload: true });
 
   return (
     <GameProvider>
