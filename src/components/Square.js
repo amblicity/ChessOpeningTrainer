@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 const PIECE_IMAGES = {
   b: {
@@ -39,7 +39,6 @@ const Square = ({
   const pieceImage = piece ? PIECE_IMAGES[piece.type][piece.color] : null;
   const squareStyle = isBlackSquare ? styles.blackSquare : styles.whiteSquare;
 
-  // Style for the selected piece
   const selectedStyle = isSelected ? styles.selected : {};
 
   return (
@@ -63,9 +62,7 @@ const styles = StyleSheet.create({
   blackSquare: { backgroundColor: 'grey' },
   whiteSquare: { backgroundColor: 'white' },
   selected: {
-    transform: [{ scale: 1.25 }], // Example: scale up the piece
-    // borderColor: 'red',
-    // borderWidth: 2,
+    transform: [{ scale: 1.25 }],
   },
 });
 

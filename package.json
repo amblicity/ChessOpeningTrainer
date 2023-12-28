@@ -10,10 +10,14 @@
     "test": "jest"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.0.1",
     "chess.js": "^1.0.0-beta.7",
     "react": "18.2.0",
     "react-native": "0.73.1",
-    "react-native-sound": "^0.11.2"
+    "react-native-flipper": "^0.212.0",
+    "react-native-sound": "^0.11.2",
+    "redux": "^4.2.1",
+    "redux-flipper": "^2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

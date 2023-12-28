@@ -1,11 +1,10 @@
-// GameContext.js
 import React, { createContext, useReducer } from 'react';
 
 const GameContext = createContext();
 
 const initialState = {
   currentScenario: null,
-  completedLinesPerScenario: {}, // Store completed lines per scenario
+  completedLinesPerScenario: {},
 };
 
 const gameReducer = (state, action) => {

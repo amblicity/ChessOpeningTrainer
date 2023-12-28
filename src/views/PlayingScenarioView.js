@@ -32,7 +32,6 @@ export const PlayingScenarioView = () => {
       />
       <View style={styles.linesList}>
         <Text style={{ color: 'white', marginBottom: 10 }}>Completed</Text>
-        {/* Render completed lines */}
         {completedLinesArray.length > 0 ? (
           completedLinesArray.map((line, index) => (
             <Text key={index} style={styles.headerText}>
@@ -45,7 +44,6 @@ export const PlayingScenarioView = () => {
         <Text>----</Text>
 
         <Text style={{ color: 'white', marginBottom: 10 }}>Remaining</Text>
-        {/* Render remaining lines */}
         {remainingLines.map((list, index) => (
           <Text key={index} style={styles.headerText}>
             {list.line}
@@ -76,15 +74,11 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
   },
-  linesInfo: {
-    // Style for the scoreboard area
-  },
+  linesInfo: {},
   infoText: {
-    // Style for the headers (Completed Lines, Remaining Lines)
     color: 'white',
   },
   lineText: {
-    // Style for individual line names
     color: 'white',
   },
 });

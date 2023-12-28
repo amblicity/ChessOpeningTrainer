@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import scenarios from '../data/scenarios.js';
 import GameContext from '../state/GameContext';
 
@@ -19,14 +19,12 @@ export const BoardView = ({ fen, color = 'b', scenarioName }) => {
   const [moveHistory, setMoveHistory] = useState([]);
   const { state, dispatch } = useContext(GameContext);
 
-  // To mark a line as completed
   const completeLine = lineName => {
     dispatch({
       type: 'COMPLETE_LINE',
       payload: { scenario: scenarioName, line: lineName },
     });
     alert('Completed line: ' + lineName);
-    // Removed direct call to selectRandomLine here
   };
 
   const selectRandomLine = () => {

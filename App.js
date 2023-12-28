@@ -1,9 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GameProvider } from './src/state/GameContext';
-import { PlayingScenarioView } from './src/views/PlayingScenarioView'; // Adjust the import path as needed
+import { PlayingScenarioView } from './src/views/PlayingScenarioView';
+import { store } from './src/state/store';
 
 export const App = () => {
+  console.log('Initial state: ', store.getState());
+
   return (
     <GameProvider>
       <View style={styles.container}>
@@ -27,15 +30,11 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
   },
-  linesInfo: {
-    // Style for the scoreboard area
-  },
+  linesInfo: {},
   infoText: {
-    // Style for the headers (Completed Lines, Remaining Lines)
     color: 'white',
   },
   lineText: {
-    // Style for individual line names
     color: 'white',
   },
 });
