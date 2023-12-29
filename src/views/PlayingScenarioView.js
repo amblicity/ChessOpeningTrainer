@@ -3,9 +3,15 @@ import { View, StyleSheet, Text } from 'react-native';
 import { BoardView } from '../components/BoardView';
 import GameContext from '../state/GameContext';
 import scenarios from '../data/scenarios';
+import { useSelector } from 'react-redux';
+
+const completedLinesInScenario = state => state.currentPlay.completedLines;
 
 export const PlayingScenarioView = () => {
   const { state, dispatch } = useContext(GameContext);
+
+  const completedLinesRedux = useSelector(completedLinesInScenario);
+  console.log('completedLinesRedux', completedLinesRedux);
 
   const scenarioName = 'QueensGambitAccepted';
   const userColor = 'w';

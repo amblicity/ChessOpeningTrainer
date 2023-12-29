@@ -2,15 +2,21 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import scenarios from '../data/scenarios.js';
 import GameContext from '../state/GameContext';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Chess } from 'chess.js';
 import Square from './Square';
+import { store } from '../state/store';
 
 const DIMENSION = 8;
 const COLUMN_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const screenWidth = Dimensions.get('window').width - 32;
 
-export const BoardView = ({ fen, color = 'b', scenarioName }) => {
+const currentScenarioName = state => state.currentPlay.scenario;
+
+export const BoardView = ({ fen, color = 'b' }) => {
+  const scenarioName = useSelector(currentScenarioName);
+  console.log('scenarioByRedux', scenarioName);
   const [game, setGame] = useState(new Chess(fen));
   const [board, setBoard] = useState([]);
   const [selectedSquare, setSelectedSquare] = useState(null);

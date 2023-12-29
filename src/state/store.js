@@ -29,7 +29,10 @@ export const appReducer = (state = initialAppState, action) => {
 };
 
 const initialCurrentPlayState = {
-  scenario: null,
+  scenario: 'QueensGambitAccepted',
+  playingAs: 'w',
+  completedLines: [],
+  remainingLines: [],
 };
 
 export const currentPlayReducer = (state = initialCurrentPlayState, action) => {
