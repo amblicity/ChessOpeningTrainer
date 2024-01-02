@@ -1,15 +1,13 @@
-import { createStore, applyMiddleware } from 'redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { persistReducer, persistStore } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const middlewares = [
-  /* other middlewares */
-];
+const middlewares = [];
 
 if (__DEV__) {
   const createDebugger = require('redux-flipper').default;
   middlewares.push(createDebugger());
 }
-
-import { combineReducers } from 'redux';
 
 const initialAppState = {
   initialized: false,
@@ -28,10 +26,47 @@ export const appReducer = (state = initialAppState, action) => {
   }
 };
 
+const initialProgressState = {
+  completedLines: {
+    QueensGambitAccepted: [],
+    KingsIndianDefense: [],
+    // all others from json...
+  },
+};
+
+const progressReducer = (state = initialProgressState, action) => {
+  switch (action.type) {
+    case 'progress/addCompletedLine': {
+      const { scenario, line } = action.payload;
+      const completedLinesForScenario = [...state.completedLines[scenario]];
+
+      // Check if the line is already completed to avoid duplicates
+      if (!completedLinesForScenario.includes(line)) {
+        completedLinesForScenario.push(line);
+      }
+
+      return {
+        ...state,
+        completedLines: {
+          ...state.completedLines,
+          [scenario]: completedLinesForScenario,
+        },
+      };
+    }
+
+    case 'progress/reset': {
+      return initialProgressState;
+    }
+
+    default:
+      return state;
+  }
+};
+
 const initialCurrentPlayState = {
   scenario: 'QueensGambitAccepted',
+  startingPosition: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
   playingAs: 'w',
-  completedLines: [],
   remainingLines: [],
 };
 
@@ -51,6 +86,17 @@ export const currentPlayReducer = (state = initialCurrentPlayState, action) => {
 const rootReducer = combineReducers({
   app: appReducer,
   currentPlay: currentPlayReducer,
+  progress: progressReducer,
 });
 
-export const store = createStore(rootReducer, applyMiddleware(...middlewares));
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+export const store = createStore(
+  persistedReducer,
+  applyMiddleware(...middlewares),
+);
+export let persistor = persistStore(store);

@@ -2,11 +2,12 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GameProvider } from './src/state/GameContext';
 import { PlayingScenarioView } from './src/views/PlayingScenarioView';
-import { store } from './src/state/store';
+import { store, persistor } from './src/state/store';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SelectScenarioView } from './src/views/SelectScenarioView';
+import { PersistGate } from 'redux-persist/integration/react';
 
 export const App = () => {
   // console.log('Initial state: ', store.getState());
@@ -15,19 +16,23 @@ export const App = () => {
 
   return (
     <Provider store={store}>
-      <GameProvider>
+      <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen
               name="Select Opening"
               component={SelectScenarioView}
             />
+            <Stack.Screen
+              name="Play Opening Lines"
+              component={PlayingScenarioView}
+            />
           </Stack.Navigator>
           {/*<View style={styles.container}>*/}
           {/*  <PlayingScenarioView />*/}
           {/*</View>*/}
         </NavigationContainer>
-      </GameProvider>
+      </PersistGate>
     </Provider>
   );
 };
