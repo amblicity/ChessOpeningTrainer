@@ -39,28 +39,6 @@ const scenarios = {
       moves: ['d4', 'd5', 'c4', 'dxc4', 'Nf3'],
     },
   ],
-  jobavaLondon: [
-    {
-      line: 'Classical Line',
-      moves: ['1. d4', '2. Nf3', '3. Bf4', '4. e3', '5. Nbd2'],
-    },
-    {
-      line: 'Aggressive Line',
-      moves: ['1. d4', '2. Nc3', '3. Bf4', '4. e4', '5. Qd2'],
-    },
-    {
-      line: 'Fianchetto Line',
-      moves: ['1. d4', '2. Nc3', '3. Bf4', '4. g3', '5. Bg2'],
-    },
-    {
-      line: 'Defensive Line',
-      moves: ['1. d4', '2. Nc3', '3. Bf4', '4. e3', '5. Be2'],
-    },
-    {
-      line: 'Central Control Line',
-      moves: ['1. d4', '2. Nc3', '3. Bf4', '4. e3', '5. c4'],
-    },
-  ],
 };
 
 export default scenarios;

@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import scenarios from '../data/scenarios.js';
-import GameContext from '../state/GameContext';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Chess } from 'chess.js';
 import Square from './Square';
-import { store } from '../state/store';
 
 const DIMENSION = 8;
 const COLUMN_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -16,31 +14,30 @@ const currentScenarioName = state => state.currentPlay.scenario;
 
 export const BoardView = ({ fen, color = 'b' }) => {
   const scenarioName = useSelector(currentScenarioName);
-  console.log('scenarioByRedux', scenarioName);
   const [game, setGame] = useState(new Chess(fen));
-  const [board, setBoard] = useState([]);
+  const [_, setBoard] = useState([]);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const scenarioLines = scenarios[scenarioName];
   const [currentLine, setCurrentLine] = useState(null);
   const [moveHistory, setMoveHistory] = useState([]);
-  const { state, dispatch } = useContext(GameContext);
+
+  const dispatch = useDispatch();
+  const completedLines = useSelector(
+    state => state.progress.completedLines[scenarioName],
+  );
 
   const completeLine = lineName => {
     dispatch({
-      type: 'COMPLETE_LINE',
+      type: 'progress/addCompletedLine',
       payload: { scenario: scenarioName, line: lineName },
     });
     alert('Completed line: ' + lineName);
   };
 
   const selectRandomLine = () => {
-    const completedLines =
-      state.completedLinesPerScenario[scenarioName] || new Set();
     const remainingLines = scenarioLines.filter(
-      line => !completedLines.has(line.line),
+      line => !completedLines.includes(line.line),
     );
-    console.log('completedLines', completedLines);
-    console.log('remainingLines', remainingLines);
 
     if (remainingLines.length === 0) {
       alert('All lines in this scenario are completed!');
@@ -52,9 +49,6 @@ export const BoardView = ({ fen, color = 'b' }) => {
   };
 
   useEffect(() => {
-    const completedLines =
-      state.completedLinesPerScenario[scenarioName] || new Set();
-    console.log('Updated completedLines', completedLines);
     const newLine = selectRandomLine();
     console.log('New Line after state update:', newLine);
     if (newLine) {
@@ -64,7 +58,8 @@ export const BoardView = ({ fen, color = 'b' }) => {
         makeCpuMove();
       }
     }
-  }, [state.completedLinesPerScenario, scenarioName]);
+    //eslint-disable-next-line
+  }, [scenarioName]);
 
   useEffect(() => {
     console.log('Starting FEN: ', fen);
@@ -102,7 +97,6 @@ export const BoardView = ({ fen, color = 'b' }) => {
       console.log('done: ', completedLineName);
       completeLine(completedLineName);
       const newLine = selectRandomLine();
-      console.log('newLine: ', newLine);
       if (newLine) {
         setCurrentLine(newLine);
         resetGame();
@@ -125,11 +119,10 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
   const validateUserMove = move => {
     const newMoveHistory = [...moveHistory, move];
-    const completedLines =
-      state.completedLinesPerScenario[scenarioName] || new Set();
     const remainingLines = scenarioLines.filter(
-      line => !completedLines.has(line.line),
+      line => !completedLines.includes(line.line),
     );
+
     const matchedLine = remainingLines.find(line => {
       return newMoveHistory.every(
         (mhMove, index) => line.moves[index] === mhMove,

@@ -1,28 +1,22 @@
-import React, { useContext, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { BoardView } from '../components/BoardView';
-import GameContext from '../state/GameContext';
 import scenarios from '../data/scenarios';
 import { useSelector } from 'react-redux';
 
-const completedLinesInScenario = state => state.currentPlay.completedLines;
+const currentScenarioSelector = state => state.currentPlay.scenario;
 
 export const PlayingScenarioView = () => {
-  const { state, dispatch } = useContext(GameContext);
+  const scenarioName = useSelector(currentScenarioSelector);
+  const completedLines = useSelector(
+    state => state.progress.completedLines[scenarioName],
+  );
 
-  const completedLinesRedux = useSelector(completedLinesInScenario);
-  console.log('completedLinesRedux', completedLinesRedux);
-
-  const scenarioName = 'QueensGambitAccepted';
-  const userColor = 'w';
+  const userColor = useSelector(state => state.currentPlay.playingAs);
   const scenarioLines = scenarios[scenarioName];
 
-  const completedLines =
-    state.completedLinesPerScenario[scenarioName] || new Set();
-  const completedLinesArray = Array.from(completedLines);
-
   const remainingLines = scenarioLines.filter(
-    line => !completedLines.has(line.line),
+    line => !completedLines.includes(line.line),
   );
 
   return (
@@ -38,8 +32,8 @@ export const PlayingScenarioView = () => {
       />
       <View style={styles.linesList}>
         <Text style={{ color: 'white', marginBottom: 10 }}>Completed</Text>
-        {completedLinesArray.length > 0 ? (
-          completedLinesArray.map((line, index) => (
+        {completedLines.length > 0 ? (
+          completedLines.map((line, index) => (
             <Text key={index} style={styles.headerText}>
               {line}
             </Text>

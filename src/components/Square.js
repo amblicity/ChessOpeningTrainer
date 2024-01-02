@@ -3,28 +3,28 @@ import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 const PIECE_IMAGES = {
   b: {
-    w: require('./pieces/wB.png'),
-    b: require('./pieces/bB.png'),
+    w: require('../../assets/pieces/wB.png'),
+    b: require('../../assets/pieces/bB.png'),
   },
   k: {
-    w: require('./pieces/wK.png'),
-    b: require('./pieces/bK.png'),
+    w: require('../../assets/pieces/wK.png'),
+    b: require('../../assets/pieces/bK.png'),
   },
   n: {
-    w: require('./pieces/wN.png'),
-    b: require('./pieces/bN.png'),
+    w: require('../../assets/pieces/wN.png'),
+    b: require('../../assets/pieces/bN.png'),
   },
   p: {
-    w: require('./pieces/wP.png'),
-    b: require('./pieces/bP.png'),
+    w: require('../../assets/pieces/wP.png'),
+    b: require('../../assets/pieces/bP.png'),
   },
   q: {
-    w: require('./pieces/wQ.png'),
-    b: require('./pieces/bQ.png'),
+    w: require('../../assets/pieces/wQ.png'),
+    b: require('../../assets/pieces/bQ.png'),
   },
   r: {
-    w: require('./pieces/wR.png'),
-    b: require('./pieces/bR.png'),
+    w: require('../../assets/pieces/wR.png'),
+    b: require('../../assets/pieces/bR.png'),
   },
 };
 
