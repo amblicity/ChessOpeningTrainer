@@ -36,6 +36,36 @@ export const BoardView = ({ fen, color = 'b' }) => {
     alert('Completed line: ' + lineName);
   };
 
+  const [boardOffset, setBoardOffset] = useState({ x: 0, y: 0 });
+
+  const onBoardLayout = event => {
+    const layout = event.nativeEvent.layout;
+    setBoardOffset({ x: layout.x, y: layout.y });
+  };
+
+  const handlePieceDrop = gestureState => {
+    const squareSize = (screenWidth - 32) / 8;
+    const adjustedX = gestureState.moveX - boardOffset.x;
+    const adjustedY = gestureState.moveY - boardOffset.y;
+
+    const file = Math.floor(adjustedX / squareSize);
+    const rank = 7 - Math.floor(adjustedY / squareSize);
+
+    const targetSquare = `${COLUMN_NAMES[file]}${rank + 1}`;
+    console.log(targetSquare);
+    // console.log(targetSquare)
+    return;
+    const move = { from: sourceSquare, to: targetSquare, promotion: 'q' }; // Include promotion if needed
+
+    if (game.move(move)) {
+      console.log('Valid move');
+      // Update the game state here
+    } else {
+      console.log('Invalid move');
+      // Handle invalid move (e.g., revert piece position)
+    }
+  };
+
   const selectRandomLine = () => {
     const remainingLines = scenarioLines.filter(
       line => !completedLines.includes(line.line),
@@ -220,6 +250,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
           (rank + fileIndex) % 2 === (color === 'w' ? 1 : 0);
         row.push(
           <Square
+            handlePieceDrop={handlePieceDrop}
             key={square}
             size={screenWidth / DIMENSION}
             piece={piece}
@@ -239,7 +270,11 @@ export const BoardView = ({ fen, color = 'b' }) => {
     return squares;
   };
 
-  return <View style={styles.container}>{createBoardData(game)}</View>;
+  return (
+    <View style={styles.container} onLayout={onBoardLayout}>
+      {createBoardData(game)}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({

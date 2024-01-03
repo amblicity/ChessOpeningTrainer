@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+import { Animated, Image, PanResponder, StyleSheet, View } from 'react-native';
 
 const PIECE_IMAGES = {
   b: {
@@ -35,24 +35,52 @@ const Square = ({
   square,
   handleSquarePress,
   isSelected,
+  handlePieceDrop,
 }) => {
   const pieceImage = piece ? PIECE_IMAGES[piece.type][piece.color] : null;
   const squareStyle = isBlackSquare ? styles.blackSquare : styles.whiteSquare;
 
   const selectedStyle = isSelected ? styles.selected : {};
 
+  const pan = useRef(new Animated.ValueXY()).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+        useNativeDriver: false,
+      }),
+      onPanResponderRelease: (evt, gestureState) => {
+        console.log('gesture', gestureState);
+        handlePieceDrop(gestureState);
+        Animated.timing(pan, {
+          toValue: { x: 0, y: 0 },
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
+      },
+    }),
+  ).current;
+
   return (
-    <TouchableOpacity
+    <View
       onPress={() => handleSquarePress(square)}
       style={[styles.square, squareStyle, { width: size, height: size }]}>
       {pieceImage && (
-        <Image
-          source={pieceImage}
-          resizeMode="contain"
-          style={[styles.piece, selectedStyle]}
-        />
+        <Animated.View
+          style={{
+            transform: [{ translateX: pan.x }, { translateY: pan.y }],
+          }}
+          {...panResponder.panHandlers}
+          useNativeDriver={true}>
+          <Image
+            source={pieceImage}
+            style={{ width: 40, height: 40 }}
+            resizeMode="contain"
+          />
+        </Animated.View>
       )}
-    </TouchableOpacity>
+    </View>
   );
 };
 
