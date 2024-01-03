@@ -30,6 +30,7 @@ const initialProgressState = {
   completedLines: {
     QueensGambitAccepted: [],
     KingsIndianDefense: [],
+    RuyLopez: [],
     // all others from json...
   },
 };
@@ -64,10 +65,12 @@ const progressReducer = (state = initialProgressState, action) => {
 };
 
 const initialCurrentPlayState = {
-  scenario: 'QueensGambitAccepted',
+  scenario: '',
   startingPosition: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-  playingAs: 'w',
+  playingAs: '',
   remainingLines: [],
+  line: '',
+  moveIndex: 0,
 };
 
 export const currentPlayReducer = (state = initialCurrentPlayState, action) => {
@@ -75,7 +78,15 @@ export const currentPlayReducer = (state = initialCurrentPlayState, action) => {
     case 'currentPlay/setScenario': {
       return {
         ...state,
-        scenario: action.payload,
+        scenario: action.payload.opening,
+        playingAs: action.payload.playingAs,
+      };
+    }
+    case 'currentPlay/setLine': {
+      return {
+        ...state,
+        line: action.payload.line,
+        moveIndex: action.payload.moveIndex,
       };
     }
     default:
@@ -92,6 +103,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
+  blacklist: ['currentPlay'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import scenarios from '../data/scenarios.js';
 import { useDispatch, useSelector } from 'react-redux';
+import openingData from '../data/openingdb.json';
 
 import { Chess } from 'chess.js';
 import Square from './Square';
@@ -13,11 +13,13 @@ const screenWidth = Dimensions.get('window').width - 32;
 const currentScenarioName = state => state.currentPlay.scenario;
 
 export const BoardView = ({ fen, color = 'b' }) => {
+  const openings = openingData.openings;
   const scenarioName = useSelector(currentScenarioName);
   const [game, setGame] = useState(new Chess(fen));
   const [_, setBoard] = useState([]);
   const [selectedSquare, setSelectedSquare] = useState(null);
-  const scenarioLines = scenarios[scenarioName];
+  const scenarioLines =
+    openings.find(opening => opening.key === scenarioName)?.variations || [];
   const [currentLine, setCurrentLine] = useState(null);
   const [moveHistory, setMoveHistory] = useState([]);
 
@@ -131,6 +133,10 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
     if (matchedLine) {
       console.log('Current Line:', scenarioName, matchedLine.line);
+      dispatch({
+        type: 'currentPlay/setLine',
+        payload: { line: matchedLine.line, moveIndex: moveHistory.length },
+      });
       const nextMoveIndex = newMoveHistory.length;
       const nextMove = matchedLine.moves[nextMoveIndex + 1];
       console.log(
@@ -157,7 +163,9 @@ export const BoardView = ({ fen, color = 'b' }) => {
               setGame(new Chess(game.fen()));
               setSelectedSquare(null);
             } else {
-              throw new Error('Move does not follow the selected scenario.');
+              throw new Error(
+                'This move is not part of the (remaining) lines of this opening! Try something else!',
+              );
             }
           } else {
             throw new Error('Invalid move');
@@ -185,6 +193,10 @@ export const BoardView = ({ fen, color = 'b' }) => {
         console.log('CPU Move:', nextMove);
         const moveResult = game.move(nextMove);
         if (moveResult) {
+          dispatch({
+            type: 'currentPlay/setLine',
+            payload: { line: currentLine.line, moveIndex: moveHistory.length },
+          });
           setGame(new Chess(game.fen()));
           setMoveHistory(prev => [...prev, nextMove]);
         } else {
