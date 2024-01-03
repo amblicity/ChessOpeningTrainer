@@ -15,6 +15,11 @@ Planned release date iOS: March 2024 // Planned release date Android: May 2024
 - Add CloudKit (?) & Apple-Login
 
 ## Changelog
+### 0.5.0
+- Adds hints
+- Uses .json as opening db
+- Adds navigation stacks
+
 ### 0.4.0
 - Adds redux as state management
 - Adds redux-persist
