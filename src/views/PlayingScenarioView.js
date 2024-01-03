@@ -1,37 +1,78 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Button,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { BoardView } from '../components/BoardView';
-import scenarios from '../data/scenarios';
+import openingData from '../data/openingdb.json';
+
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { BlurView } from '@react-native-community/blur';
 
 const currentScenarioSelector = state => state.currentPlay.scenario;
 
 export const PlayingScenarioView = () => {
+  const [showHelp, setShowHelp] = useState(false);
+  const [commentaryForNextMove, setCommentaryForNextMove] = useState('');
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button onPress={() => setShowHelp(c => !c)} title={'Help'} />
+      ),
+    });
+  }, [navigation]);
+
+  const currentLine = useSelector(state => state.currentPlay.line);
+  const currentMoveIndex = useSelector(state => state.currentPlay.moveIndex);
+
   const scenarioName = useSelector(currentScenarioSelector);
   const completedLines = useSelector(
     state => state.progress.completedLines[scenarioName],
   );
+  const openings = openingData.openings;
 
   const userColor = useSelector(state => state.currentPlay.playingAs);
-  const scenarioLines = scenarios[scenarioName];
+  const scenarioLines =
+    openings.find(opening => opening.key === scenarioName)?.variations || [];
 
   const remainingLines = scenarioLines.filter(
     line => !completedLines.includes(line.line),
   );
 
+  useEffect(() => {
+    const comment = scenarioLines.find(variation => {
+      console.log('variation.line', variation.line);
+      console.log('currentline', currentLine);
+      if (variation.line === currentLine) {
+        console.log(
+          'comment in variation: ',
+          variation.commentary[currentMoveIndex + 1],
+        );
+        setCommentaryForNextMove(variation.commentary[currentMoveIndex + 1]);
+      }
+    });
+  }, [currentLine, currentMoveIndex]);
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>{scenarioName}</Text>
         <Text style={styles.headerText}>Playing as {userColor}</Text>
       </View>
       <BoardView
-        fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        fen={openingData.startingFEN}
         scenarioName={scenarioName}
         color={userColor}
       />
       <View style={styles.linesList}>
-        <Text style={{ color: 'white', marginBottom: 10 }}>Completed</Text>
+        <Text style={{ color: 'black', marginBottom: 10 }}>Completed</Text>
         {completedLines.length > 0 ? (
           completedLines.map((line, index) => (
             <Text key={index} style={styles.headerText}>
@@ -43,23 +84,45 @@ export const PlayingScenarioView = () => {
         )}
         <Text>----</Text>
 
-        <Text style={{ color: 'white', marginBottom: 10 }}>Remaining</Text>
+        <Text style={{ color: 'black', marginBottom: 10 }}>Remaining</Text>
         {remainingLines.map((list, index) => (
           <Text key={index} style={styles.headerText}>
             {list.line}
           </Text>
         ))}
       </View>
-    </View>
+      {showHelp === true && (
+        <BlurView
+          style={styles.absolute}
+          blurType="prominent"
+          blurAmount={10}
+          reducedTransparencyFallbackColor="white"
+        />
+      )}
+      {showHelp === true && (
+        <View
+          style={[
+            styles.absolute,
+            { justifyContent: 'center', alignItems: 'center' },
+          ]}>
+          <TouchableOpacity
+            onPress={() => {
+              setShowHelp(false);
+            }}>
+            <Text>{commentaryForNextMove}</Text>
+            <Text>CLOSE</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'darkblue',
+    backgroundColor: '#edf4fe',
   },
   header: {
     marginBottom: 20,
@@ -72,13 +135,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
-    color: 'white',
+    color: 'black',
   },
   linesInfo: {},
   infoText: {
-    color: 'white',
+    color: 'black',
   },
   lineText: {
-    color: 'white',
+    color: 'black',
+  },
+  absolute: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
 });

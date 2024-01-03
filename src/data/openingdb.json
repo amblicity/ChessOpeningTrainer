@@ -1,0 +1,105 @@
+{
+  "startingFEN": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "openings": [
+    {
+      "name": "Ruy Lopez",
+      "key": "RuyLopez",
+      "information": "Detailed information about Ruy Lopez",
+      "preferredColor": "white",
+      "variations": [
+        {
+          "line": "Morphy Defense",
+          "moves": [
+            "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "d6"
+          ],
+          "commentary": [
+            "White opens by controlling the center and preparing to develop the bishop and queen.",
+            "Black mirrors White’s pawn move, fighting for central control.",
+            "White develops the knight, targeting the e5 pawn.",
+            "Black develops the knight, defending the e5 pawn.",
+            "White pins the knight, which is a key defender of the e5 pawn.",
+            "Black pushes the bishop, preparing to expand on the queenside.",
+            "White retreats the bishop, maintaining pressure on the e5 pawn.",
+            "Black develops another knight, attacking the e4 pawn.",
+            "White castles, safeguarding the king and connecting the rooks.",
+            "Black prepares to castle, enhancing king safety.",
+            "White moves the rook to the open file, supporting e4 and preparing for central expansion.",
+            "Black gains space on the queenside, challenging White’s bishop.",
+            "White retreats the bishop but keeps pressure on the center.",
+            "Black shores up the e5 pawn, preparing to develop the dark-squared bishop."
+          ]
+        },
+        {
+          "line": "Closed Defense",
+          "moves": [
+            "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d6"
+          ],
+          "commentary": [
+            "White opens by controlling the center, paving the way for queen and bishop development.",
+            "Black mirrors White’s move, fighting for central control.",
+            "White develops a knight, eyeing the e5 pawn.",
+            "Black develops a knight, defending the e5 pawn.",
+            "White’s bishop move initiates the Ruy Lopez, pinning the knight.",
+            "Black challenges the bishop, looking to gain queenside space.",
+            "White retreats the bishop while keeping an eye on the knight.",
+            "Black develops another knight, attacking the e4 pawn.",
+            "White castles, enhancing king safety and connecting the rooks.",
+            "Black’s bishop move prepares for kingside castling.",
+            "White positions the rook on the open file, supporting the e4 pawn.",
+            "Black expands on the queenside, pushing White’s bishop.",
+            "White’s bishop retreats but maintains central influence.",
+            "Black castles, achieving king safety.",
+            "White prepares to support the center with d4.",
+            "Black reinforces the e5 pawn and clears the way for the light-squared bishop."
+          ]
+        },
+        {
+          "line": "Exchange Variation",
+          "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6"],
+          "commentary": [
+            "White initiates the game by controlling the center, preparing for further piece development.",
+            "Black responds in kind, mirroring White’s control of the center.",
+            "White develops the knight, aiming at the e5 pawn.",
+            "Black’s knight move defends the e5 pawn, contributing to central stability.",
+            "The Bb5 move introduces the Ruy Lopez, targeting Black’s knight.",
+            "Black’s a6 challenges White’s bishop, forcing a decision.",
+            "White opts to exchange the bishop for the knight, altering the pawn structure."
+          ]
+        },
+        {
+          "line": "Berlin Defense",
+          "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6"],
+          "commentary": [
+            "White starts by seizing central space, opening up lines for the queen and bishop.",
+            "Black plays symmetrically, countering White’s central control.",
+            "White develops the knight, pressuring Black’s e5 pawn.",
+            "Black’s knight move both develops a piece and protects the e5 pawn.",
+            "White’s bishop move introduces the Ruy Lopez, pinning the knight against the king.",
+            "Black counters by developing another knight, attacking White’s e4 pawn."
+          ]
+        },
+        {
+          "line": "Schliemann Defense",
+          "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "f5"],
+          "commentary": [
+            "White opens by controlling the center, facilitating queen and bishop development.",
+            "Black mirrors White’s pawn move, contesting the central space.",
+            "White develops the knight, targeting Black’s e5 pawn.",
+            "Black’s knight move defends the e5 pawn and aids in central control.",
+            "The bishop move to b5 is a classic Ruy Lopez, pressuring the knight.",
+            "Black’s f5 is an aggressive counter, challenging White’s pawn structure."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Queens Gambit Accepted",
+      "key": "QueensGambitAccepted",
+      "information": "Detailed information about Queens Gambit Accepted",
+      "preferredColor": "black",
+      "variations": [
+      ],
+      "commentary": []
+    }
+  ]
+}
