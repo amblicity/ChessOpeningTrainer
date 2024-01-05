@@ -1,5 +1,11 @@
 import React, { useRef } from 'react';
-import { Animated, PanResponder, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  PanResponder,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const PIECE_IMAGES = {
   b: {
@@ -49,8 +55,11 @@ const Piece = ({
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponder: () => true,
+      // onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderStart: (evt, gestureState) => {
+        console.log('eh?');
+      },
 
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
         useNativeDriver: false,
@@ -75,16 +84,22 @@ const Piece = ({
       }}
       {...panResponder.panHandlers}
       useNativeDriver={true}>
-      <Animated.Image
-        source={pieceImage}
-        style={{
-          top: top,
-          left: left,
-          width: 40,
-          height: 40,
-        }}
-        resizeMode="contain"
-      />
+      <TouchableOpacity
+        onPress={() => {
+          handleSquarePress(square);
+          console.log('hey');
+        }}>
+        <Animated.Image
+          source={pieceImage}
+          style={{
+            top: top,
+            left: left,
+            width: 40,
+            height: 40,
+          }}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
     </Animated.View>
   );
 };
