@@ -20,7 +20,7 @@ export const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <appStack.Navigator initialRouteName={'Welcome'}>
+          <appStack.Navigator initialRouteName={'SelectOpening'}>
             <appStack.Group>
               <appStack.Screen
                 name="Welcome"
@@ -31,7 +31,7 @@ export const App = () => {
                 }}
               />
               <appStack.Screen
-                name="Select Opening"
+                name="SelectOpening"
                 component={SelectScenarioView}
                 options={{
                   headerTransparent: true,

@@ -48,13 +48,13 @@ export const PlayingScenarioView = () => {
 
   useEffect(() => {
     const comment = scenarioLines.find(variation => {
-      console.log('variation.line', variation.line);
-      console.log('currentline', currentLine);
+      // console.log('variation.line', variation.line);
+      // console.log('currentline', currentLine);
       if (variation.line === currentLine) {
-        console.log(
-          'comment in variation: ',
-          variation.commentary[currentMoveIndex + 1],
-        );
+        // console.log(
+        //   'comment in variation: ',
+        //   variation.commentary[currentMoveIndex + 1],
+        // );
         setCommentaryForNextMove(variation.commentary[currentMoveIndex + 1]);
       }
     });
