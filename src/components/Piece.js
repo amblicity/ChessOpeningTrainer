@@ -35,9 +35,7 @@ const PIECE_IMAGES = {
 };
 
 const Piece = ({
-  size,
   piece,
-  isBlackSquare,
   top,
   left,
   square,
@@ -46,30 +44,20 @@ const Piece = ({
   handlePieceDrop,
 }) => {
   const pieceImage = piece ? PIECE_IMAGES[piece.type][piece.color] : null;
-  const squareStyle = isBlackSquare ? styles.blackSquare : styles.whiteSquare;
-
-  const selectedStyle = isSelected ? styles.selected : {};
-
   const pan = useRef(new Animated.ValueXY()).current;
 
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
-      // onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
-      onPanResponderStart: (evt, gestureState) => {
-        console.log('eh?');
-      },
-
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
         useNativeDriver: false,
       }),
       onPanResponderRelease: (evt, gestureState) => {
-        // console.log('gesture', gestureState);
         handlePieceDrop(gestureState);
         Animated.timing(pan, {
           toValue: { x: 0, y: 0 },
-          duration: 500,
+          duration: 200,
           useNativeDriver: true,
         }).start();
       },
@@ -79,6 +67,8 @@ const Piece = ({
   return (
     <Animated.View
       style={{
+        top: 0,
+        left: 0,
         position: 'absolute',
         justifyContent: 'center',
         alignItems: 'center',
@@ -92,12 +82,16 @@ const Piece = ({
         }}>
         <Animated.Image
           source={pieceImage}
-          style={{
-            top: top + 1,
-            left: left + 2,
-            width: 40,
-            height: 40,
-          }}
+          style={[
+            {
+              position: 'absolute',
+              top: top + 1,
+              left: left + 2,
+              width: 40,
+              height: 40,
+            },
+            isSelected && styles.selected,
+          ]}
           resizeMode="contain"
         />
       </TouchableOpacity>
@@ -106,13 +100,9 @@ const Piece = ({
 };
 
 const styles = StyleSheet.create({
-  square: {},
   piece: { width: '80%', height: '80%' },
-  blackSquare: { backgroundColor: 'red' },
-  whiteSquare: { backgroundColor: 'blue' },
   selected: {
-    position: 'absolute',
-    transform: [{ scale: 1.25 }],
+    transform: [{ scale: 1.15 }, { rotate: '0deg' }],
   },
 });
 

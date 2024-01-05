@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import openingData from '../data/openingdb.json';
 
@@ -247,26 +247,32 @@ export const BoardView = ({ fen, color = 'b' }) => {
   };
 
   const handleSquarePress = square => {
-    // return;
+    let move = null;
     if (selectedSquare) {
       if (selectedSquare !== square) {
         try {
-          const move = game.move({ from: selectedSquare, to: square });
-          if (move) {
-            if (validateUserMove(move.san)) {
-              setGame(new Chess(game.fen()));
-              setPossibleMoves([]);
-              setSelectedSquare(null);
-            } else {
-              throw new Error(
-                'This move is not part of the (remaining) lines of this opening! Try something else!',
-              );
-            }
+          move = game.move({ from: selectedSquare, to: square });
+        } catch (e) {
+          console.log('Invalid move!');
+        }
+        if (move) {
+          if (validateUserMove(move.san)) {
+            setGame(new Chess(game.fen()));
+            setPossibleMoves([]);
+            setSelectedSquare(null);
           } else {
-            throw new Error('Invalid move');
+            Alert.alert(
+              'Try something different',
+              selectedSquare +
+                ' to ' +
+                square +
+                ' is not part of this opening! Click HELP to get a guess.',
+            );
+            game.undo();
+            setPossibleMoves([]);
+            setSelectedSquare(null);
           }
-        } catch (error) {
-          alert(error.message);
+        } else {
           game.undo();
           setPossibleMoves([]);
           setSelectedSquare(null);
@@ -326,10 +332,10 @@ export const BoardView = ({ fen, color = 'b' }) => {
           (rank + fileIndex) % 2 === (color === 'w' ? 1 : 0);
 
         if (piece) {
-          piecesPosition[square] = piece; // Store the piece position
+          piecesPosition[square] = piece;
         }
 
-        if (possibleMoves.includes(square, 0)) {
+        if (possibleMoves.includes(square, 0) && !piece) {
           possibleMove = true;
         }
 
@@ -373,6 +379,11 @@ export const BoardView = ({ fen, color = 'b' }) => {
     return Object.entries(piecesPosition).map(([square, piece]) => {
       const { x, y } = getScreenCoordinates(square);
 
+      // console.log('mapping pieces');
+      // console.log('square', square);
+      // console.log('piece', piece);
+      // console.log('x,y', x, y);
+
       return (
         <Piece
           handlePieceDrop={handlePieceDrop}
@@ -393,7 +404,6 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
   const createPieceRendering = gameInstance => {
     const pieces = pie();
-    console.log(pieces.length);
     return <View>{pieces}</View>;
     return;
 
@@ -438,7 +448,6 @@ export const BoardView = ({ fen, color = 'b' }) => {
       </View>
     );
   } else {
-    console.log('Returning BoardView');
     return (
       <View style={styles.container} onLayout={onBoardLayout}>
         {createSquareRendering(game)}
