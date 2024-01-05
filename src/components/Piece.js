@@ -80,6 +80,8 @@ const Piece = ({
     <Animated.View
       style={{
         position: 'absolute',
+        justifyContent: 'center',
+        alignItems: 'center',
         transform: [{ translateX: pan.x }, { translateY: pan.y }],
       }}
       {...panResponder.panHandlers}
@@ -87,13 +89,12 @@ const Piece = ({
       <TouchableOpacity
         onPress={() => {
           handleSquarePress(square);
-          console.log('hey');
         }}>
         <Animated.Image
           source={pieceImage}
           style={{
-            top: top,
-            left: left,
+            top: top + 1,
+            left: left + 2,
             width: 40,
             height: 40,
           }}

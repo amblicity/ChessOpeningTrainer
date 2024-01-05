@@ -44,7 +44,6 @@ const Square = ({
   handlePieceDrop,
   possibleMove,
 }) => {
-  const pieceImage = piece ? PIECE_IMAGES[piece.type][piece.color] : null;
   const squareStyle = isBlackSquare ? styles.blackSquare : styles.whiteSquare;
   const possibleMoveStyle = possibleMove && styles.possibleMoveSquare;
 
@@ -81,20 +80,32 @@ const Square = ({
       style={[
         styles.square,
         squareStyle,
-        possibleMoveStyle,
         {
           width: size,
           height: size,
-          zIndex: 500,
-          elevation: 4,
         },
-      ]}
-    />
+      ]}>
+      {possibleMoveStyle && (
+        <View
+          style={{
+            backgroundColor: 'black',
+            opacity: 0.1,
+            width: 20,
+            height: 20,
+            borderRadius: 20,
+          }}
+        />
+      )}
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  square: { zIndex: -1 },
+  square: {
+    zIndex: -1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   piece: { width: '80%', height: '80%' },
   blackSquare: { backgroundColor: 'grey' },
   whiteSquare: { backgroundColor: 'white' },

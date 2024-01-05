@@ -360,9 +360,8 @@ export const BoardView = ({ fen, color = 'b' }) => {
     const file = square[0]; // e.g., 'A'
     const rank = parseInt(square[1], 10); // e.g., 1
 
-    // Assuming COLUMN_NAMES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     const fileIndex = COLUMN_NAMES.indexOf(file);
-    const rankIndex = DIMENSION - rank; // assuming rank 1 is at the bottom
+    const rankIndex = DIMENSION - rank;
 
     const x = fileIndex * (screenWidth / DIMENSION);
     const y = rankIndex * (screenWidth / DIMENSION);
