@@ -28,10 +28,12 @@ const PIECE_IMAGES = {
   },
 };
 
-const Square = ({
+const Piece = ({
   size,
   piece,
   isBlackSquare,
+  top,
+  left,
   square,
   handleSquarePress,
   isSelected,
@@ -67,53 +69,35 @@ const Square = ({
 
   return (
     <Animated.View
-      style={[
-        styles.square,
-        squareStyle,
-        {
-          width: size,
-          height: size,
-          zIndex: 500,
-          elevation: 4,
-        },
-      ]}>
-      {pieceImage && (
-        <Animated.View
-          style={{
-            zIndex: 10,
-            elevation: 5,
-            backgroundColor: 'red',
-            position: 'absolute',
-            transform: [{ translateX: pan.x }, { translateY: pan.y }],
-          }}
-          {...panResponder.panHandlers}
-          useNativeDriver={true}>
-          {/*<Animated.Image*/}
-          {/*  source={pieceImage}*/}
-          {/*  style={{*/}
-          {/*    zIndex: 10,*/}
-          {/*    position: 'absolute',*/}
-          {/*    width: 40,*/}
-          {/*    height: 40,*/}
-          {/*  }}*/}
-          {/*  resizeMode="contain"*/}
-          {/*/>*/}
-        </Animated.View>
-      )}
+      style={{
+        position: 'absolute',
+        transform: [{ translateX: pan.x }, { translateY: pan.y }],
+      }}
+      {...panResponder.panHandlers}
+      useNativeDriver={true}>
+      <Animated.Image
+        source={pieceImage}
+        style={{
+          top: top,
+          left: left,
+          width: 40,
+          height: 40,
+        }}
+        resizeMode="contain"
+      />
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  square: { zIndex: -1 },
+  square: {},
   piece: { width: '80%', height: '80%' },
-  blackSquare: { backgroundColor: 'grey' },
-  whiteSquare: { backgroundColor: 'white' },
+  blackSquare: { backgroundColor: 'red' },
+  whiteSquare: { backgroundColor: 'blue' },
   selected: {
-    zIndex: 100,
     position: 'absolute',
     transform: [{ scale: 1.25 }],
   },
 });
 
-export default Square;
+export default Piece;

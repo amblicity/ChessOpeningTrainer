@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import openingData from '../data/openingdb.json';
 
 import { Chess } from 'chess.js';
 import Square from './Square';
+import Piece from './Piece';
 
 const DIMENSION = 8;
 const COLUMN_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -13,63 +14,99 @@ const screenWidth = Dimensions.get('window').width - 32;
 const currentScenarioName = state => state.currentPlay.scenario;
 
 export const BoardView = ({ fen, color = 'b' }) => {
+  const dispatch = useDispatch();
+
+  /**
+   * Init
+   */
+  const [initialized, setInitialized] = useState(false);
+
+  /**
+   * Data
+   */
   const openings = openingData.openings;
   const scenarioName = useSelector(currentScenarioName);
+
+  /**
+   * Chess.JS & Board Layout
+   */
   const [game, setGame] = useState(new Chess(fen));
-  const [_, setBoard] = useState([]);
-  const [selectedSquare, setSelectedSquare] = useState(null);
-  const scenarioLines =
-    openings.find(opening => opening.key === scenarioName)?.variations || [];
-  const [currentLine, setCurrentLine] = useState(null);
-  const [moveHistory, setMoveHistory] = useState([]);
-
-  const dispatch = useDispatch();
-  const completedLines = useSelector(
-    state => state.progress.completedLines[scenarioName],
-  );
-
-  const completeLine = lineName => {
-    dispatch({
-      type: 'progress/addCompletedLine',
-      payload: { scenario: scenarioName, line: lineName },
-    });
-    alert('Completed line: ' + lineName);
-  };
-
+  const [board, setBoard] = useState(null);
   const [boardOffset, setBoardOffset] = useState({ x: 0, y: 0 });
 
+  const offset = { x: -32, y: 70 };
   const onBoardLayout = event => {
+    console.log('onBoardLayout', event.nativeEvent.layout);
     const layout = event.nativeEvent.layout;
+    offset.x = layout.x;
+    offset.y = layout.y;
+    console.log('layout', layout);
     setBoardOffset({ x: layout.x, y: layout.y });
   };
 
+  /**
+   * Making moves
+   */
+  const [selectedSquare, setSelectedSquare] = useState(null);
+  const piecesPosition = {};
+
   const handlePieceDrop = gestureState => {
-    console.log('gesturedata:', gestureState);
-    const squareSize = (screenWidth - 32) / 8;
-    const adjustedTargetX = gestureState.moveX - 30;
-    const adjustedTargetY = gestureState.moveY - 127;
-    const adjustedSourceX = gestureState.x0 - 30;
+    console.log('boardOffset', offset);
+    console.log('gestureState', gestureState);
+    const squareSize = (screenWidth - 39) / 8;
+    console.log('squareSize', squareSize);
+    const offX = 40;
+    const offY = 120;
+    const adjustedTargetX = gestureState.moveX - 32;
+    const adjustedTargetY = gestureState.moveY - 140;
+    const adjustedSourceX = gestureState.x0 - 32;
     const adjustedSourceY = gestureState.y0 - 140;
 
     const targetFile = Math.floor(adjustedTargetX / squareSize);
     const targetRank = 7 - Math.floor(adjustedTargetY / squareSize);
     const sourceFile = Math.floor(adjustedSourceX / squareSize);
+    console.log('file: adjustedSourceX / squareSize', sourceFile);
     const sourceRank = 7 - Math.floor(adjustedSourceY / squareSize);
+    console.log('rank: adjustedSourceY / squareSize', 7 - sourceRank);
 
     const targetSquare = `${COLUMN_NAMES[targetFile]}${targetRank + 1}`;
     const sourceSquare = `${COLUMN_NAMES[sourceFile]}${sourceRank + 1}`;
-    alert(sourceSquare + ' to ' + targetSquare);
-    return;
-    const move = { from: sourceSquare, to: targetSquare, promotion: 'q' }; // Include promotion if needed
-
-    if (game.move(move)) {
-      console.log('Valid move');
-      // Update the game state here
-    } else {
-      console.log('Invalid move');
-      // Handle invalid move (e.g., revert piece position)
+    // alert(sourceSquare + ' to ' + targetSquare);
+    try {
+      console.log('moving, from: ' + sourceSquare + ' to ' + targetSquare);
+      const move = { from: sourceSquare, to: targetSquare, promotion: 'q' }; // Include promotion if needed
+      if (game.move(move)) {
+        // alert('valid move');
+        console.log('Valid move');
+        setGame(new Chess(game.fen()));
+        // Update the game state here
+      } else {
+        // alert('invalid move');
+        game.undo();
+        console.log('Invalid move');
+        // Handle invalid move (e.g., revert piece position)
+      }
+    } catch (e) {
+      // alert(e);
+      return;
     }
   };
+
+  /**
+   * Calculating Current Line & Move-History
+   */
+  const scenarioLines =
+    openings.find(opening => opening.key === scenarioName)?.variations || [];
+  const [currentLine, setCurrentLine] = useState(null);
+  const [moveHistory, setMoveHistory] = useState([]);
+  const completedLines = useSelector(
+    state => state.progress.completedLines[scenarioName],
+  );
+
+  useEffect(() => {
+    console.log('Starting FEN: ', fen);
+    setGame(new Chess(fen));
+  }, [fen]);
 
   const selectRandomLine = () => {
     const remainingLines = scenarioLines.filter(
@@ -85,9 +122,23 @@ export const BoardView = ({ fen, color = 'b' }) => {
     return remainingLines[randomIndex];
   };
 
+  /**
+   * Mark a variation as COMPLETE
+   */
+  const completeLine = lineName => {
+    dispatch({
+      type: 'progress/addCompletedLine',
+      payload: { scenario: scenarioName, line: lineName },
+    });
+    alert('Completed line: ' + lineName);
+  };
+
+  /**
+   * After opening has changed
+   */
   useEffect(() => {
     const newLine = selectRandomLine();
-    console.log('New Line after state update:', newLine);
+    console.log('New Variation after state update:', newLine);
     if (newLine) {
       setCurrentLine(newLine);
       resetGame();
@@ -99,16 +150,13 @@ export const BoardView = ({ fen, color = 'b' }) => {
   }, [scenarioName]);
 
   useEffect(() => {
-    console.log('Starting FEN: ', fen);
-    setGame(new Chess(fen));
-  }, [fen]);
-
-  useEffect(() => {
-    setBoard(createBoardData(game));
+    console.log('CreateBoardData useEffect');
+    setBoard(createSquareRendering(game));
     //eslint-disable-next-line
   }, [game]);
 
   useEffect(() => {
+    console.log('CPU needs to make move? useEffect');
     if (game.turn() !== color && currentLine) {
       makeCpuMove();
     }
@@ -116,6 +164,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
   }, [currentLine, moveHistory]);
 
   useEffect(() => {
+    console.log('Select a line at the beginning useEffect');
     if (color === 'b') {
       const newLine = selectRandomLine();
       if (newLine) {
@@ -123,15 +172,17 @@ export const BoardView = ({ fen, color = 'b' }) => {
         makeCpuMove();
       }
     }
+    setInitialized(true);
     //eslint-disable-next-line
   }, []);
 
   useEffect(() => {
+    console.log('Checking if a line is completed or not');
+
     const isLineCompleted =
       currentLine && !currentLine.moves[moveHistory.length];
     if (isLineCompleted) {
       const completedLineName = currentLine.line;
-      console.log('done: ', completedLineName);
       completeLine(completedLineName);
       const newLine = selectRandomLine();
       if (newLine) {
@@ -145,13 +196,17 @@ export const BoardView = ({ fen, color = 'b' }) => {
     //eslint-disable-next-line
   }, [currentLine, moveHistory.length]);
 
+  /**
+   * Function calls
+   */
   const resetGame = () => {
+    console.log('Reset Game – Call');
     const newGame = new Chess(fen);
     setGame(newGame);
     setMoveHistory([]);
     setCurrentLine(null);
     setSelectedSquare(null);
-    setBoard(createBoardData(newGame));
+    setBoard(createSquareRendering(newGame));
   };
 
   const validateUserMove = move => {
@@ -189,6 +244,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
   };
 
   const handleSquarePress = square => {
+    return;
     if (selectedSquare) {
       if (selectedSquare !== square) {
         try {
@@ -241,7 +297,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
     }
   };
 
-  const createBoardData = gameInstance => {
+  const createSquareRendering = gameInstance => {
     const squares = [];
     for (let i = 0; i < DIMENSION; i++) {
       const row = [];
@@ -253,6 +309,11 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
         const isBlackSquare =
           (rank + fileIndex) % 2 === (color === 'w' ? 1 : 0);
+
+        if (piece) {
+          piecesPosition[square] = piece; // Store the piece position
+        }
+
         row.push(
           <Square
             handlePieceDrop={handlePieceDrop}
@@ -267,7 +328,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
         );
       }
       squares.push(
-        <View key={i} style={styles.row}>
+        <View key={'square_' + i} style={styles.row}>
           {row}
         </View>,
       );
@@ -275,11 +336,99 @@ export const BoardView = ({ fen, color = 'b' }) => {
     return squares;
   };
 
-  return (
-    <View style={styles.container} onLayout={onBoardLayout}>
-      {createBoardData(game)}
-    </View>
-  );
+  const getScreenCoordinates = square => {
+    const file = square[0]; // e.g., 'A'
+    const rank = parseInt(square[1], 10); // e.g., 1
+
+    // Assuming COLUMN_NAMES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    const fileIndex = COLUMN_NAMES.indexOf(file);
+    const rankIndex = DIMENSION - rank; // assuming rank 1 is at the bottom
+
+    const x = fileIndex * (screenWidth / DIMENSION);
+    const y = rankIndex * (screenWidth / DIMENSION);
+
+    return { x, y };
+  };
+
+  const pie = () => {
+    return Object.entries(piecesPosition).map(([square, piece]) => {
+      const { x, y } = getScreenCoordinates(square);
+
+      return (
+        <Piece
+          handlePieceDrop={handlePieceDrop}
+          key={square}
+          size={screenWidth / DIMENSION}
+          top={y}
+          left={x}
+          piece={piece}
+          square={square}
+          handleSquarePress={handleSquarePress}
+          isSelected={square === selectedSquare}
+          pieceType={piece.type}
+          color={piece.color}
+        />
+      );
+    });
+  };
+
+  const createPieceRendering = gameInstance => {
+    const pieces = pie();
+    console.log(pieces.length);
+    return <View>{pieces}</View>;
+    return;
+
+    for (let i = 0; i < DIMENSION; i++) {
+      const row = [];
+      for (let j = 0; j < DIMENSION; j++) {
+        const rank = color === 'w' ? DIMENSION - i : i + 1;
+        const fileIndex = color === 'w' ? j : DIMENSION - 1 - j;
+        const square = COLUMN_NAMES[fileIndex] + rank;
+        const piece = gameInstance.get(square);
+
+        const isBlackSquare =
+          (rank + fileIndex) % 2 === (color === 'w' ? 1 : 0);
+        row.push(
+          <Piece
+            handlePieceDrop={handlePieceDrop}
+            key={square}
+            size={screenWidth / DIMENSION}
+            piece={piece}
+            square={square}
+            isBlackSquare={isBlackSquare}
+            handleSquarePress={handleSquarePress}
+            isSelected={square === selectedSquare}
+          />,
+        );
+      }
+      pieces.push(
+        <View
+          key={'piece_' + i}
+          style={[styles.row, { position: 'absolute', top: i * 42, left: 0 }]}>
+          {row}
+        </View>,
+      );
+    }
+    return pieces;
+  };
+
+  if (!initialized) {
+    return (
+      <View>
+        <Text>Loading</Text>
+      </View>
+    );
+  } else {
+    console.log('Returning BoardView');
+    return (
+      <View style={styles.container} onLayout={onBoardLayout}>
+        {createSquareRendering(game)}
+        <View style={{ position: 'absolute' }}>
+          {createPieceRendering(game)}
+        </View>
+      </View>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
