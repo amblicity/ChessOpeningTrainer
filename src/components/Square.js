@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Animated, Image, PanResponder, StyleSheet, View } from 'react-native';
+import { Animated, PanResponder, StyleSheet, View } from 'react-native';
 
 const PIECE_IMAGES = {
   b: {
@@ -47,11 +47,14 @@ const Square = ({
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
         useNativeDriver: false,
       }),
       onPanResponderRelease: (evt, gestureState) => {
-        console.log('gesture', gestureState);
+        // console.log('gesture', gestureState);
         handlePieceDrop(gestureState);
         Animated.timing(pan, {
           toValue: { x: 0, y: 0 },
@@ -63,33 +66,52 @@ const Square = ({
   ).current;
 
   return (
-    <View
-      onPress={() => handleSquarePress(square)}
-      style={[styles.square, squareStyle, { width: size, height: size }]}>
+    <Animated.View
+      style={[
+        styles.square,
+        squareStyle,
+        {
+          width: size,
+          height: size,
+          zIndex: 500,
+          elevation: 4,
+        },
+      ]}>
       {pieceImage && (
         <Animated.View
           style={{
+            zIndex: 10,
+            elevation: 5,
+            backgroundColor: 'red',
+            position: 'absolute',
             transform: [{ translateX: pan.x }, { translateY: pan.y }],
           }}
           {...panResponder.panHandlers}
           useNativeDriver={true}>
-          <Image
+          <Animated.Image
             source={pieceImage}
-            style={{ width: 40, height: 40 }}
+            style={{
+              zIndex: 10,
+              position: 'absolute',
+              width: 40,
+              height: 40,
+            }}
             resizeMode="contain"
           />
         </Animated.View>
       )}
-    </View>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  square: { alignItems: 'center', justifyContent: 'center' },
+  square: { zIndex: -1 },
   piece: { width: '80%', height: '80%' },
   blackSquare: { backgroundColor: 'grey' },
   whiteSquare: { backgroundColor: 'white' },
   selected: {
+    zIndex: 100,
+    position: 'absolute',
     transform: [{ scale: 1.25 }],
   },
 });
