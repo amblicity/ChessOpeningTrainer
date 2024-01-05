@@ -1,5 +1,11 @@
 import React, { useRef } from 'react';
-import { Animated, PanResponder, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  PanResponder,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const PIECE_IMAGES = {
   b: {
@@ -36,9 +42,11 @@ const Square = ({
   handleSquarePress,
   isSelected,
   handlePieceDrop,
+  possibleMove,
 }) => {
   const pieceImage = piece ? PIECE_IMAGES[piece.type][piece.color] : null;
   const squareStyle = isBlackSquare ? styles.blackSquare : styles.whiteSquare;
+  const possibleMoveStyle = possibleMove && styles.possibleMoveSquare;
 
   const selectedStyle = isSelected ? styles.selected : {};
 
@@ -66,41 +74,22 @@ const Square = ({
   ).current;
 
   return (
-    <Animated.View
+    <TouchableOpacity
+      onPress={() => {
+        handleSquarePress(square);
+      }}
       style={[
         styles.square,
         squareStyle,
+        possibleMoveStyle,
         {
           width: size,
           height: size,
           zIndex: 500,
           elevation: 4,
         },
-      ]}>
-      {pieceImage && (
-        <Animated.View
-          style={{
-            zIndex: 10,
-            elevation: 5,
-            backgroundColor: 'red',
-            position: 'absolute',
-            transform: [{ translateX: pan.x }, { translateY: pan.y }],
-          }}
-          {...panResponder.panHandlers}
-          useNativeDriver={true}>
-          {/*<Animated.Image*/}
-          {/*  source={pieceImage}*/}
-          {/*  style={{*/}
-          {/*    zIndex: 10,*/}
-          {/*    position: 'absolute',*/}
-          {/*    width: 40,*/}
-          {/*    height: 40,*/}
-          {/*  }}*/}
-          {/*  resizeMode="contain"*/}
-          {/*/>*/}
-        </Animated.View>
-      )}
-    </Animated.View>
+      ]}
+    />
   );
 };
 
@@ -109,6 +98,7 @@ const styles = StyleSheet.create({
   piece: { width: '80%', height: '80%' },
   blackSquare: { backgroundColor: 'grey' },
   whiteSquare: { backgroundColor: 'white' },
+  possibleMoveSquare: { backgroundColor: 'red' },
   selected: {
     zIndex: 100,
     position: 'absolute',

@@ -49,8 +49,10 @@ export const BoardView = ({ fen, color = 'b' }) => {
    */
   const [selectedSquare, setSelectedSquare] = useState(null);
   const piecesPosition = {};
+  const [possibleMoves, setPossibleMoves] = useState([]);
 
   const handlePieceDrop = gestureState => {
+    return;
     console.log('boardOffset', offset);
     console.log('gestureState', gestureState);
     const squareSize = (screenWidth - 39) / 8;
@@ -244,7 +246,30 @@ export const BoardView = ({ fen, color = 'b' }) => {
   };
 
   const handleSquarePress = square => {
-    return;
+    // return;
+
+    const possibleMoves = game
+      .moves({
+        square: square,
+        verbose: true,
+      })
+      .map(item => item.to);
+
+    setPossibleMoves(possibleMoves);
+    // const newBoard = board.map(square => {
+    // unselect everything
+    // if (piece.selected) {
+    //   return {
+    //     ...square,
+    //     selected: false,
+    //     canMoveHere: false,
+    //   };
+    // }
+
+    // const isSelected = square.position === position;
+    const canMoveHere = possibleMoves.indexOf(square) > -1;
+    console.log('possibleMoves', possibleMoves);
+
     if (selectedSquare) {
       if (selectedSquare !== square) {
         try {
@@ -306,6 +331,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
         const fileIndex = color === 'w' ? j : DIMENSION - 1 - j;
         const square = COLUMN_NAMES[fileIndex] + rank;
         const piece = gameInstance.get(square);
+        let possibleMove = false;
 
         const isBlackSquare =
           (rank + fileIndex) % 2 === (color === 'w' ? 1 : 0);
@@ -314,10 +340,16 @@ export const BoardView = ({ fen, color = 'b' }) => {
           piecesPosition[square] = piece; // Store the piece position
         }
 
+        if (possibleMoves.includes(square, 0)) {
+          console.log('HJHH');
+          possibleMove = true;
+        }
+
         row.push(
           <Square
             handlePieceDrop={handlePieceDrop}
             key={square}
+            possibleMove={possibleMove}
             size={screenWidth / DIMENSION}
             piece={piece}
             square={square}
