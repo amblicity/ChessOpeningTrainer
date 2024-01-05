@@ -44,16 +44,21 @@ export const BoardView = ({ fen, color = 'b' }) => {
   };
 
   const handlePieceDrop = gestureState => {
+    console.log('gesturedata:', gestureState);
     const squareSize = (screenWidth - 32) / 8;
-    const adjustedX = gestureState.moveX - boardOffset.x;
-    const adjustedY = gestureState.moveY - boardOffset.y;
+    const adjustedTargetX = gestureState.moveX - 30;
+    const adjustedTargetY = gestureState.moveY - 127;
+    const adjustedSourceX = gestureState.x0 - 30;
+    const adjustedSourceY = gestureState.y0 - 140;
 
-    const file = Math.floor(adjustedX / squareSize);
-    const rank = 7 - Math.floor(adjustedY / squareSize);
+    const targetFile = Math.floor(adjustedTargetX / squareSize);
+    const targetRank = 7 - Math.floor(adjustedTargetY / squareSize);
+    const sourceFile = Math.floor(adjustedSourceX / squareSize);
+    const sourceRank = 7 - Math.floor(adjustedSourceY / squareSize);
 
-    const targetSquare = `${COLUMN_NAMES[file]}${rank + 1}`;
-    console.log(targetSquare);
-    // console.log(targetSquare)
+    const targetSquare = `${COLUMN_NAMES[targetFile]}${targetRank + 1}`;
+    const sourceSquare = `${COLUMN_NAMES[sourceFile]}${sourceRank + 1}`;
+    alert(sourceSquare + ' to ' + targetSquare);
     return;
     const move = { from: sourceSquare, to: targetSquare, promotion: 'q' }; // Include promotion if needed
 
@@ -279,5 +284,5 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
 const styles = StyleSheet.create({
   container: { flexDirection: 'column' },
-  row: { flexDirection: 'row' },
+  row: { flexDirection: 'row', zIndex: -1 },
 });
