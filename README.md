@@ -15,6 +15,11 @@ Planned release date iOS: March 2024 // Planned release date Android: May 2024
 - Add CloudKit (?) & Apple-Login
 
 ## Changelog
+### 0.6.0
+- Major refactor for squares & pieces separation
+  - Adds "possible moves" indicator
+  - Adds drag&drop mocking and logic
+
 ### 0.5.0
 - Adds hints
 - Uses .json as opening db
@@ -47,7 +52,7 @@ You'll need --force for npm installations due to mismatching versions of flipper
 ```cd .
 npm i --force
 npx pod-install ios
-npx react-native run-ios --simulator 'iPhone SE (3rd generation)'
+npx react-native run-ios --simulator 'iPhone SE (3rd generation)' --scheme "ChessOpeningTrainer"
 ```
 
 Then start Flipper-Debugger.

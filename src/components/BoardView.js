@@ -208,6 +208,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
     setMoveHistory([]);
     setCurrentLine(null);
     setSelectedSquare(null);
+    setPossibleMoves([]);
     setBoard(createSquareRendering(newGame));
   };
 
@@ -247,29 +248,6 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
   const handleSquarePress = square => {
     // return;
-
-    const possibleMoves = game
-      .moves({
-        square: square,
-        verbose: true,
-      })
-      .map(item => item.to);
-
-    setPossibleMoves(possibleMoves);
-    // const newBoard = board.map(square => {
-    // unselect everything
-    // if (piece.selected) {
-    //   return {
-    //     ...square,
-    //     selected: false,
-    //     canMoveHere: false,
-    //   };
-    // }
-
-    // const isSelected = square.position === position;
-    const canMoveHere = possibleMoves.indexOf(square) > -1;
-    console.log('possibleMoves', possibleMoves);
-
     if (selectedSquare) {
       if (selectedSquare !== square) {
         try {
@@ -277,6 +255,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
           if (move) {
             if (validateUserMove(move.san)) {
               setGame(new Chess(game.fen()));
+              setPossibleMoves([]);
               setSelectedSquare(null);
             } else {
               throw new Error(
@@ -289,13 +268,23 @@ export const BoardView = ({ fen, color = 'b' }) => {
         } catch (error) {
           alert(error.message);
           game.undo();
+          setPossibleMoves([]);
           setSelectedSquare(null);
         }
       } else {
+        setPossibleMoves([]);
         setSelectedSquare(null);
       }
     } else {
       if (game.get(square)) {
+        const possibleMoves = game
+          .moves({
+            square: square,
+            verbose: true,
+          })
+          .map(item => item.to);
+
+        setPossibleMoves(possibleMoves);
         setSelectedSquare(square);
       }
     }
@@ -341,7 +330,6 @@ export const BoardView = ({ fen, color = 'b' }) => {
         }
 
         if (possibleMoves.includes(square, 0)) {
-          console.log('HJHH');
           possibleMove = true;
         }
 
