@@ -16,6 +16,7 @@ Planned release date iOS: March 2024 // Planned release date Android: May 2024
 
 ## Changelog
 ### 0.6.0
+- Architecture refactor to allow AppStore release deployment
 - Major refactor for squares & pieces separation
   - Adds "possible moves" indicator
   - Adds drag&drop mocking and logic
@@ -46,13 +47,27 @@ Planned release date iOS: March 2024 // Planned release date Android: May 2024
 ## Getting Started
 >**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
-## Then (in theory):
+### Then:
 You'll need --force for npm installations due to mismatching versions of flipper & redux-debugging
 
+#### iOS Development
 ```cd .
 npm i --force
-npx pod-install ios
+PRODUCTION=0 npx pod-install
 npx react-native run-ios --simulator 'iPhone SE (3rd generation)' --scheme "ChessOpeningTrainer"
 ```
 
-Then start Flipper-Debugger.
+#### iOS Release
+```cd .
+npm i --force
+PRODUCTION=1 npx pod-install
+```
+
+- Open .xworkspace
+- Product > Archive
+
+#### Android Development
+```tbd```
+
+#### Android Release
+```tbd```
