@@ -32,7 +32,7 @@
         {
           "line": "Closed Defense",
           "moves": [
-            "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d6"
+            "e4", "e5", "Nc3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d6"
           ],
           "commentary": [
             "White opens by controlling the center, paving the way for queen and bishop development.",
