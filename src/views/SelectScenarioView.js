@@ -54,6 +54,12 @@ export const SelectScenarioView = () => {
           }}>
           <Text>Queens Gambit Accepted</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedOpening('CaroKann', 'b');
+          }}>
+          <Text>Caro-Kann</Text>
+        </TouchableOpacity>
         <View style={{ height: 20 }} />
         <TouchableOpacity
           onPress={() => {

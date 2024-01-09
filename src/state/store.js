@@ -31,6 +31,7 @@ const initialProgressState = {
     QueensGambitAccepted: [],
     KingsIndianDefense: [],
     RuyLopez: [],
+    CaroKann: [],
     // all others from json...
   },
 };
