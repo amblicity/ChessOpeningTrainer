@@ -10,6 +10,8 @@ import { SelectScenarioView } from './src/views/SelectScenarioView';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WelcomeScreen } from './src/views/WelcomeScreen';
 import { HelpFullScreenView } from './src/views/HelpFullScreenView';
+import ChooseColorScreen from './src/views/ChooseColorScreen';
+import SwipeableImageSwitcher from './src/views/ChooseColorScreen';
 
 export const App = () => {
   // console.log('Initial state: ', store.getState());
@@ -20,7 +22,7 @@ export const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <appStack.Navigator initialRouteName={'SelectOpening'}>
+          <appStack.Navigator initialRouteName={'ChooseColorScreen'}>
             <appStack.Group>
               <appStack.Screen
                 name="Welcome"
@@ -28,6 +30,16 @@ export const App = () => {
                 options={{
                   headerTransparent: true,
                   headerBackTitleVisible: false,
+                }}
+              />
+              <appStack.Screen
+                name="ChooseColorScreen"
+                component={SwipeableImageSwitcher}
+                options={{
+                  headerTransparent: true,
+                  headerBackVisible: false,
+                  headerBackTitleVisible: false,
+                  headerTitle: '',
                 }}
               />
               <appStack.Screen

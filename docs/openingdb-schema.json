@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "startingFEN": {
+      "type": "string",
+      "description": "The FEN string representing the starting position of the chess game."
+    },
+    "openings": {
+      "type": "array",
+      "description": "Array of different chess openings.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the chess opening."
+          },
+          "key": {
+            "type": "string",
+            "description": "A unique key identifier for the opening."
+          },
+          "information": {
+            "type": "string",
+            "description": "Detailed information about the opening."
+          },
+          "preferredColor": {
+            "type": "string",
+            "description": "Preferred color to play this opening."
+          },
+          "variations": {
+            "type": "array",
+            "description": "Different variations of the opening.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line": {
+                  "type": "string",
+                  "description": "Name of the variation line."
+                },
+                "moves": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Sequence of moves in this variation."
+                },
+                "commentary": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Commentaries for each move."
+                }
+              },
+              "required": ["line", "moves", "commentary"]
+            }
+          }
+        },
+        "required": ["name", "key", "information", "preferredColor", "variations"]
+      }
+    }
+  },
+  "required": ["startingFEN", "openings"]
+}

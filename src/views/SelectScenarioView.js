@@ -37,7 +37,9 @@ export const SelectScenarioView = () => {
       />
 
       <View style={styles.openingList}>
-        <Text>Playing as white:</Text>
+        <Text style={{ fontFamily: 'Dosis-SemiBold', fontSize: 20 }}>
+          Playing as white:
+        </Text>
         <TouchableOpacity
           onPress={() => {
             setSelectedOpening('RuyLopez', 'w');
