@@ -22,7 +22,7 @@ export const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <appStack.Navigator initialRouteName={'ChooseColorScreen'}>
+          <appStack.Navigator initialRouteName={'Welcome'}>
             <appStack.Group>
               <appStack.Screen
                 name="Welcome"

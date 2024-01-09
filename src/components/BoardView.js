@@ -174,7 +174,9 @@ export const BoardView = ({ fen, color = 'b' }) => {
         makeCpuMove();
       }
     }
-    setInitialized(true);
+    setTimeout(() => {
+      setInitialized(true);
+    }, 500);
     //eslint-disable-next-line
   }, []);
 
@@ -186,11 +188,17 @@ export const BoardView = ({ fen, color = 'b' }) => {
     if (isLineCompleted) {
       const completedLineName = currentLine.line;
       completeLine(completedLineName);
+
+      /**
+       * Refactor to make it move after accepting the alert
+       */
       const newLine = selectRandomLine();
+      console.log('Found a new line: ', newLine);
       if (newLine) {
-        setCurrentLine(newLine);
         resetGame();
+        setCurrentLine(newLine);
         if (color === 'b') {
+          console.log('CPU makes move');
           makeCpuMove();
         }
       }
@@ -363,14 +371,20 @@ export const BoardView = ({ fen, color = 'b' }) => {
   };
 
   const getScreenCoordinates = square => {
-    const file = square[0]; // e.g., 'A'
+    const file = square[0]; // e.g., 'a'
     const rank = parseInt(square[1], 10); // e.g., 1
 
     const fileIndex = COLUMN_NAMES.indexOf(file);
     const rankIndex = DIMENSION - rank;
 
-    const x = fileIndex * (screenWidth / DIMENSION);
-    const y = rankIndex * (screenWidth / DIMENSION);
+    const x =
+      color === 'w'
+        ? fileIndex * (screenWidth / DIMENSION)
+        : (DIMENSION - 1 - fileIndex) * (screenWidth / DIMENSION);
+    const y =
+      color === 'w'
+        ? rankIndex * (screenWidth / DIMENSION)
+        : (DIMENSION - 1 - rankIndex) * (screenWidth / DIMENSION);
 
     return { x, y };
   };
@@ -378,11 +392,6 @@ export const BoardView = ({ fen, color = 'b' }) => {
   const pie = () => {
     return Object.entries(piecesPosition).map(([square, piece]) => {
       const { x, y } = getScreenCoordinates(square);
-
-      // console.log('mapping pieces');
-      // console.log('square', square);
-      // console.log('piece', piece);
-      // console.log('x,y', x, y);
 
       return (
         <Piece
@@ -404,46 +413,12 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
   const createPieceRendering = gameInstance => {
     const pieces = pie();
-    return <View>{pieces}</View>;
-    return;
-
-    for (let i = 0; i < DIMENSION; i++) {
-      const row = [];
-      for (let j = 0; j < DIMENSION; j++) {
-        const rank = color === 'w' ? DIMENSION - i : i + 1;
-        const fileIndex = color === 'w' ? j : DIMENSION - 1 - j;
-        const square = COLUMN_NAMES[fileIndex] + rank;
-        const piece = gameInstance.get(square);
-
-        const isBlackSquare =
-          (rank + fileIndex) % 2 === (color === 'w' ? 1 : 0);
-        row.push(
-          <Piece
-            handlePieceDrop={handlePieceDrop}
-            key={square}
-            size={screenWidth / DIMENSION}
-            piece={piece}
-            square={square}
-            isBlackSquare={isBlackSquare}
-            handleSquarePress={handleSquarePress}
-            isSelected={square === selectedSquare}
-          />,
-        );
-      }
-      pieces.push(
-        <View
-          key={'piece_' + i}
-          style={[styles.row, { position: 'absolute', top: i * 42, left: 0 }]}>
-          {row}
-        </View>,
-      );
-    }
-    return pieces;
+    return <>{pieces}</>;
   };
 
   if (!initialized) {
     return (
-      <View>
+      <View style={{ height: '50%', justifyContent: 'center' }}>
         <Text>Loading</Text>
       </View>
     );

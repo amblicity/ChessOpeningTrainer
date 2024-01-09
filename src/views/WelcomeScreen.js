@@ -24,7 +24,7 @@ export const WelcomeScreen = () => {
       <Text>MENU:</Text>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('Select Opening');
+          navigation.navigate('SelectOpening');
         }}>
         <Text>START</Text>
       </TouchableOpacity>
