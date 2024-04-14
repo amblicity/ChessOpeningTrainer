@@ -9,10 +9,23 @@ import { useNavigation } from '@react-navigation/native';
 import openingData from '../data/openingdb.json';
 import { BlurView } from '@react-native-community/blur';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCompletedVariationsByOpeningKey } from '../state/selectors';
 
 export const WelcomeScreen = () => {
   const navigation = useNavigation();
   const openings = openingData.openings;
+  console.log(openings);
+
+  /**
+   * Storing all openings from database to redux
+   */
+  const dispatch = useDispatch();
+  dispatch({
+    type: 'db/setOpenings',
+    payload: openings,
+  });
+
   const [showHelp, setShowHelp] = useState(false);
 
   return openings ? (

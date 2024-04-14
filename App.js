@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import { GameProvider } from './src/state/GameContext';
-import { PlayingScenarioView } from './src/views/PlayingScenarioView';
+import { PlayOpeningView } from './src/views/PlayOpeningView';
 import { store, persistor } from './src/state/store';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SelectScenarioView } from './src/views/SelectScenarioView';
+import { SelectOpeningView } from './src/views/SelectOpeningView';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WelcomeScreen } from './src/views/WelcomeScreen';
 import { HelpFullScreenView } from './src/views/HelpFullScreenView';
@@ -44,7 +44,7 @@ export const App = () => {
               />
               <appStack.Screen
                 name="SelectOpening"
-                component={SelectScenarioView}
+                component={SelectOpeningView}
                 options={{
                   headerTransparent: true,
                   headerBackTitleVisible: false,
@@ -52,7 +52,7 @@ export const App = () => {
               />
               <appStack.Screen
                 name="Play Opening Lines"
-                component={PlayingScenarioView}
+                component={PlayOpeningView}
                 options={({ navigation, route }) => ({
                   headerRight: () => <Button title="Help" />,
                   headerTransparent: true,
