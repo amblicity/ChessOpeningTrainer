@@ -8,7 +8,8 @@ function initializeVariationsForOpenings(openings) {
     acc[opening.key] = opening.variations.reduce((varAcc, variation) => {
       varAcc[variation.key] = {
         isCompleted: false,
-        isCurrentlyPlaying: false,
+        completionCount: 0,
+        firstCompletionDate: -1,
       };
       return varAcc;
     }, {});
@@ -22,6 +23,8 @@ function addCompletedVariation(state, openingKey, variationKey) {
   const openingVariations = newState[openingKey] || {};
   const updatedVariation = {
     ...openingVariations[variationKey],
+    firstCompletionDate: new Date(),
+    completionCount: state.completedVariations.completionCount + 1,
     isCompleted: true,
   };
 
@@ -47,7 +50,7 @@ export function progressReducer(state = initialProgressState, action) {
         ...state,
         completedVariations: newCompletedVariations,
       };
-    case 'progress/addCompletedVariation':
+    case 'progress/setVariationAsCompleted':
       const { openingKey, variationKey } = action.payload;
       return addCompletedVariation(state, openingKey, variationKey);
     default:
