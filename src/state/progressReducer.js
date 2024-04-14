@@ -1,18 +1,27 @@
+import openingData from '../data/openingdb.json'; // Adjust the path as needed
+
 const initialProgressState = {
   completedVariations: {},
 };
 
 // Helper function to initialize state for new openings
-function initializeVariationsForOpenings(openings) {
-  return openings.reduce((acc, opening) => {
-    acc[opening.key] = opening.variations.reduce((varAcc, variation) => {
-      varAcc[variation.key] = {
-        isCompleted: false,
-        completionCount: 0,
-        firstCompletionDate: -1,
-      };
-      return varAcc;
-    }, {});
+function initializeVariationsForOpenings(openingKeys) {
+  return openingKeys.reduce((acc, key) => {
+    // Find the full opening data by key
+    const opening = openingData.openings.find(o => o.key === key);
+
+    // Initialize variations if the opening is found
+    if (opening) {
+      acc[key] = opening.variations.reduce((varAcc, variation) => {
+        varAcc[variation.key] = {
+          isCompleted: false,
+          completionCount: 0,
+          firstCompletionDate: -1,
+        };
+        return varAcc;
+      }, {});
+    }
+
     return acc;
   }, {});
 }

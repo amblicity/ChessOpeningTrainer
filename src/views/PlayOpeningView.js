@@ -14,7 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 import { BlurView } from '@react-native-community/blur';
 import {
   getAllVariationsByOpeningKey,
-  getCompletedVariationsByOpeningKey,
   getMovesByOpeningAndVariationKey,
 } from '../state/selectors';
 
@@ -52,30 +51,30 @@ export const PlayOpeningView = () => {
     getAllVariationsByOpeningKey(state, 'CaroKann'),
   );
 
-  console.log('allVariationsInOpening', allVariationsInOpening);
+  // console.log('allVariationsInOpening', allVariationsInOpening);
 
-  const completedVariations = useSelector(state =>
-    getCompletedVariationsByOpeningKey(state, 'CaroKann'),
-  );
+  // const completedVariations = useSelector(state =>
+  //   getCompletedVariationsByOpeningKey(state, 'CaroKann'),
+  // );
 
-  console.log('completedVariations', completedVariations);
+  // console.log('completedVariations', completedVariations);
 
   const movesInVariation = useSelector(state =>
     getMovesByOpeningAndVariationKey(state, 'CaroKann', 'QICK'),
   );
 
-  console.log('moves in variation', movesInVariation);
+  // console.log('moves in variation', movesInVariation);
 
-  const remainingVariations = allVariationsInOpening.filter(
-    variation => !completedVariations.includes(variation.key),
-  );
+  // const remainingVariations = allVariationsInOpening.filter(
+  //   variation => !completedVariations.includes(variation.key),
+  // );
 
   // console.log('remainingVariations', remainingVariations);
 
   const currentVariationKey = useSelector(
     state => state.currentPlay.variationKey,
   );
-  console.log('currentVariation', currentVariationKey);
+  // console.log('currentVariation', currentVariationKey);
   const currentMoveIndex = useSelector(state => state.currentPlay.moveIndex);
 
   useEffect(() => {
@@ -100,26 +99,26 @@ export const PlayOpeningView = () => {
         <Text style={styles.headerText}>Playing as {userColor}</Text>
       </View>
       <BoardView fen={startingPositionFEN} color={userColor} />
-      <View style={styles.linesList}>
-        <Text style={{ color: 'black', marginBottom: 10 }}>Completed</Text>
-        {completedVariations.length > 0 ? (
-          completedVariations.map((line, index) => (
-            <Text key={index} style={styles.headerText}>
-              {line}
-            </Text>
-          ))
-        ) : (
-          <Text style={styles.headerText}>None</Text>
-        )}
-        <Text>----</Text>
+      {/*<View style={styles.linesList}>*/}
+      {/*  <Text style={{ color: 'black', marginBottom: 10 }}>Completed</Text>*/}
+      {/*  {completedVariations.length > 0 ? (*/}
+      {/*    completedVariations.map((line, index) => (*/}
+      {/*      <Text key={index} style={styles.headerText}>*/}
+      {/*        {line}*/}
+      {/*      </Text>*/}
+      {/*    ))*/}
+      {/*  ) : (*/}
+      {/*    <Text style={styles.headerText}>None</Text>*/}
+      {/*  )}*/}
+      {/*  <Text>----</Text>*/}
 
-        <Text style={{ color: 'black', marginBottom: 10 }}>Remaining</Text>
-        {remainingVariations.map((variation, index) => (
-          <Text key={index} style={styles.headerText}>
-            {variation.name}
-          </Text>
-        ))}
-      </View>
+      {/*  <Text style={{ color: 'black', marginBottom: 10 }}>Remaining</Text>*/}
+      {/*  {remainingVariations.map((variation, index) => (*/}
+      {/*    <Text key={index} style={styles.headerText}>*/}
+      {/*      {variation.name}*/}
+      {/*    </Text>*/}
+      {/*  ))}*/}
+      {/*</View>*/}
       {showHelp === true && (
         <BlurView
           style={styles.absolute}

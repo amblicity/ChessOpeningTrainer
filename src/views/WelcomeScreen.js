@@ -23,9 +23,11 @@ export const WelcomeScreen = () => {
    * the possible usage of some openings. Think: "Buy CaroKann".
    */
   const dispatch = useDispatch();
+  const keys = openings.map(opening => opening.key);
+
   dispatch({
     type: 'db/setOpenings',
-    payload: openings,
+    payload: keys,
   });
 
   const [showHelp, setShowHelp] = useState(false);

@@ -1,15 +1,57 @@
 import { createSelector } from 'reselect';
-import { useSelector } from 'react-redux';
+import openingJsonData from '../data/openingdb.json';
+import { useSelector } from 'react-redux'; // Ensure correct path
 
-// Basic selectors to fetch data from the state
-const getAllOpenings = state => state.db.openings;
+// Selector to retrieve all opening keys from the Redux store
+const getOpeningKeys = state => state.db.openings;
+
+// Selector to get completed variations for all openings
 const getCompletedVariations = state => state.progress.completedVariations;
+
+// This selector retrieves detailed information based on the keys stored in the Redux store
+export const getOpeningsWithDetails = createSelector(
+  [getOpeningKeys],
+  openingKeys => {
+    return openingKeys
+      .map(key => openingJsonData.openings.find(opening => opening.key === key))
+      .filter(opening => opening !== undefined); // Ensure only valid openings are returned
+  },
+);
+
+// Selector to retrieve a specific opening's details by key
+export const getOpeningByKey = createSelector(
+  [getOpeningKeys, (_, key) => key],
+  (openingKeys, key) => {
+    return openingJsonData.openings.find(opening => opening.key === key);
+  },
+);
+
+// Selector to get the moves of a specific variation within a specific opening
+export const getMovesByOpeningAndVariationKey = createSelector(
+  [getOpeningByKey, (_, __, variationKey) => variationKey],
+  (opening, variationKey) => {
+    const variation = opening?.variations.find(v => v.key === variationKey);
+    return variation ? variation.moves : [];
+  },
+);
+
+// Selector to get all variations of a specific opening identified by its openingKey
+export const getAllVariationsByOpeningKey = createSelector(
+  [getOpeningByKey],
+  opening => {
+    return opening
+      ? opening.variations.map(variation => ({
+          name: variation.name,
+          key: variation.key,
+        }))
+      : [];
+  },
+);
 
 // Selector to get completed variations and the opening name for a specific opening key
 export const getCompletedVariationsAndOpeningName = createSelector(
-  [getAllOpenings, getCompletedVariations, (state, openingKey) => openingKey],
-  (openings, completedVariations, openingKey) => {
-    const opening = openings.find(o => o.key === openingKey);
+  [getOpeningByKey, getCompletedVariations, (_, openingKey) => openingKey],
+  (opening, completedVariations, openingKey) => {
     if (!opening) {
       return { openingName: '', completedVariations: [] };
     }
@@ -17,48 +59,14 @@ export const getCompletedVariationsAndOpeningName = createSelector(
       .filter(
         v =>
           completedVariations[openingKey] &&
-          completedVariations[openingKey][v.key] &&
-          completedVariations[openingKey][v.key].isCompleted,
+          completedVariations[openingKey][v.key],
       )
       .map(v => ({ key: v.key, name: v.name }));
+
     return {
       openingName: opening.name,
       completedVariations: completedVariationsInfo,
     };
-  },
-);
-
-// Selector to get the moves of a specific variation within a specific opening
-export const getMovesByOpeningAndVariationKey = createSelector(
-  [
-    getAllOpenings,
-    (state, openingKey) => openingKey,
-    (state, openingKey, variationKey) => variationKey,
-  ],
-  (openings, openingKey, variationKey) => {
-    const opening = openings.find(o => o.key === openingKey);
-    if (opening) {
-      const variation = opening.variations.find(v => v.key === variationKey);
-      if (variation) {
-        return variation.moves;
-      }
-    }
-    return [];
-  },
-);
-
-// Selector to get all variations of a specific opening identified by its openingKey
-export const getAllVariationsByOpeningKey = createSelector(
-  [getAllOpenings, (state, openingKey) => openingKey],
-  (openings, openingKey) => {
-    const opening = openings.find(o => o.key === openingKey);
-    if (opening) {
-      return opening.variations.map(variation => ({
-        name: variation.name,
-        key: variation.key,
-      }));
-    }
-    return [];
   },
 );
 

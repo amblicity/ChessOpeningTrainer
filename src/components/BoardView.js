@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import openingData from '../data/openingdb.json';
+import {
+  getAllVariationsByOpeningKey,
+  getVariationByKey,
+  useCurrentVariation,
+} from '../state/selectors'; // Adjust the path to where your selectors are
 
 import { Chess } from 'chess.js';
 import Square from './Square';
@@ -14,14 +19,31 @@ const DIMENSION = 8;
 const COLUMN_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const screenWidth = Dimensions.get('window').width - 32;
 
-/**
- * The user has chosen an opening to learn
- */
-const currentlySelectedOpening = state => state.currentPlay.selectedOpening;
+function findMoveByKeys(openingKey, variationKey) {
+  // Find the opening by the given key
+  const opening = openingData.openings.find(
+    opening => opening.key === openingKey,
+  );
+  if (!opening) {
+    console.log('Opening not found');
+    return null;
+  }
 
-export const BoardView = ({ fen, color = 'b' }) => {
+  // Find the variation within the found opening by the given variation key
+  const variation = opening.variations.find(
+    variation => variation.key === variationKey,
+  );
+  if (!variation) {
+    console.log('Variation not found');
+    return null;
+  }
+
+  // Return the moves array if the variation is found
+  return variation.moves;
+}
+
+export const BoardView = ({ fen, color = 'BLACK' }) => {
   const dispatch = useDispatch();
-  console.log(fen);
 
   /**
    * Init
@@ -31,9 +53,20 @@ export const BoardView = ({ fen, color = 'b' }) => {
   /**
    * Data
    */
-  const openings = openingData.openings;
-  const currentOpeningName = useSelector(currentlySelectedOpening);
-  // console.log('currentOpeningName', currentOpeningName);
+  const currentOpeningKey = useSelector(
+    state => state.currentPlay.selectedOpening,
+  );
+  const allVariationsInOpening = useSelector(state =>
+    getAllVariationsByOpeningKey(state, currentOpeningKey),
+  );
+  const completedVariationsInOpening = useSelector(
+    state => state.progress.completedVariations[currentOpeningKey],
+  );
+
+  /**
+   * Currently playing
+   */
+  const currentVariation = useCurrentVariation();
 
   /**
    * Chess.JS & Board Layout
@@ -44,11 +77,9 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
   const offset = { x: -32, y: 70 };
   const onBoardLayout = event => {
-    console.log('onBoardLayout', event.nativeEvent.layout);
     const layout = event.nativeEvent.layout;
     offset.x = layout.x;
     offset.y = layout.y;
-    console.log('layout', layout);
     setBoardOffset({ x: layout.x, y: layout.y });
   };
 
@@ -58,121 +89,103 @@ export const BoardView = ({ fen, color = 'b' }) => {
   const [selectedSquare, setSelectedSquare] = useState(null);
   const piecesPosition = {};
   const [possibleMoves, setPossibleMoves] = useState([]);
-
-  const handlePieceDrop = gestureState => {
-    return;
-    console.log('boardOffset', offset);
-    console.log('gestureState', gestureState);
-    const squareSize = (screenWidth - 39) / 8;
-    console.log('squareSize', squareSize);
-    const offX = 40;
-    const offY = 120;
-    const adjustedTargetX = gestureState.moveX - 32;
-    const adjustedTargetY = gestureState.moveY - 140;
-    const adjustedSourceX = gestureState.x0 - 32;
-    const adjustedSourceY = gestureState.y0 - 140;
-
-    const targetFile = Math.floor(adjustedTargetX / squareSize);
-    const targetRank = 7 - Math.floor(adjustedTargetY / squareSize);
-    const sourceFile = Math.floor(adjustedSourceX / squareSize);
-    console.log('file: adjustedSourceX / squareSize', sourceFile);
-    const sourceRank = 7 - Math.floor(adjustedSourceY / squareSize);
-    console.log('rank: adjustedSourceY / squareSize', 7 - sourceRank);
-
-    const targetSquare = `${COLUMN_NAMES[targetFile]}${targetRank + 1}`;
-    const sourceSquare = `${COLUMN_NAMES[sourceFile]}${sourceRank + 1}`;
-    // alert(sourceSquare + ' to ' + targetSquare);
-    try {
-      console.log('moving, from: ' + sourceSquare + ' to ' + targetSquare);
-      const move = { from: sourceSquare, to: targetSquare, promotion: 'q' }; // Include promotion if needed
-      if (game.move(move)) {
-        // alert('valid move');
-        console.log('Valid move');
-        setGame(new Chess(game.fen()));
-        // Update the game state here
-      } else {
-        // alert('invalid move');
-        game.undo();
-        console.log('Invalid move');
-        // Handle invalid move (e.g., revert piece position)
-      }
-    } catch (e) {
-      // alert(e);
-      return;
-    }
-  };
-
   /**
    * Calculating Current Line & Move-History
    */
-  const allVariationsInOpening =
-    openings.find(opening => opening.key === currentOpeningName)?.variations ||
-    [];
-  // console.log('allVariationsInOpening', allVariationsInOpening);
-  const [currentVariation, setCurrentVariation] = useState(null);
+  // const [currentVariation, setCurrentVariation] = useState(null);
   const [moveHistory, setMoveHistory] = useState([]);
-  const completedVariations = useSelector(
-    state => state.progress.completedVariations[currentOpeningName],
-  );
 
+  /**
+   * UTILITY
+   * When the user has made a move, a random remaining variation of those not
+   * yet completed should be chosen
+   */
+  const findAndSelectVariation = () => {
+    console.log('allVariationsInOpening', allVariationsInOpening);
+    console.log('completedVariationsInOpening', completedVariationsInOpening);
+    const remainingVariationsInOpening = allVariationsInOpening.filter(
+      variation =>
+        !(
+          completedVariationsInOpening &&
+          completedVariationsInOpening[variation.key] &&
+          completedVariationsInOpening[variation.key].isCompleted
+        ),
+    );
+    console.log('remaining variations', remainingVariationsInOpening);
+
+    const randomIndex = Math.floor(
+      Math.random() * remainingVariationsInOpening.length,
+    );
+    return remainingVariationsInOpening[randomIndex];
+  };
+
+  /**
+   * DISPATCH
+   * Set a variation to currentlyPlaying
+   */
+  const setCurrentVariation = variationToSet => {
+    dispatch({
+      type: 'currentPlay/setVariationAndMoveIndex',
+      payload: {
+        variationKey: variationToSet,
+        openingKey: currentOpeningKey,
+      },
+    });
+  };
+
+  /**
+   * DISPATCH
+   * Mark a variation as COMPLETE
+   */
+  const completeLine = lineName => {
+    // dispatch({
+    //   type: 'progress/addCompletedVariation',
+    //   // payload: { selectedOpening: currentOpeningName, variationKey: lineName },
+    // });
+    // alert('Completed a variation: ' + lineName);
+  };
+
+  /**
+   * USEEFFECT
+   * updating chess.js with new fen?
+   */
   useEffect(() => {
     console.log('*** useEffect 01');
     console.log('Starting FEN: ', fen);
     setGame(new Chess(fen));
   }, [fen]);
 
-  const selectRandomLine = () => {
-    console.log('selectRandomLine()');
-    const remainingLines = allVariationsInOpening.filter(
-      variation => !completedVariations.includes(variation.variationKey),
-    );
-    console.log('remaining lines', remainingLines);
-
-    if (remainingLines.length === 0) {
-      alert('All lines in this scenario are completed!');
-      return null;
-    }
-
-    const randomIndex = Math.floor(Math.random() * remainingLines.length);
-    return remainingLines[randomIndex];
-  };
-
   /**
-   * Mark a variation as COMPLETE
-   */
-  const completeLine = lineName => {
-    dispatch({
-      type: 'progress/addCompletedVariation',
-      payload: { selectedOpening: currentOpeningName, variationKey: lineName },
-    });
-    alert('Completed a variation: ' + lineName);
-  };
-
-  /**
-   * After opening has changed
+   * USEEFFECT
+   * I guess for rerendering the board only?
    */
   useEffect(() => {
-    console.log('*** useEffect 02');
-    console.log('scenarioName useEffect', currentOpeningName);
-    const newLine = selectRandomLine();
-    console.log('New Variation after state update:', newLine);
-    if (newLine) {
-      setCurrentVariation(newLine);
-      resetGame();
-      if (color === 'b') {
-        makeCpuMove();
-      }
-    }
-    //eslint-disable-next-line
-  }, [currentOpeningName]);
-
-  useEffect(() => {
-    // console.log('*** useEffect 03');
+    console.log('*** useEffect 03');
     console.log('Re-rendering Board');
     setBoard(createSquareRendering(game));
+    setInitialized(true);
     //eslint-disable-next-line
   }, [game]);
 
+  /**
+   * USEEFFECT
+   * Why actually not in initial render?
+   */
+  useEffect(() => {
+    resetGame();
+    console.log('*** useEffect 02');
+    const foundVariation = findAndSelectVariation();
+    console.log('New Variation after state update:', foundVariation.key);
+    if (foundVariation) {
+      setCurrentVariation(foundVariation);
+    }
+    //eslint-disable-next-line
+  }, [currentOpeningKey]);
+
+  /**
+   * USEEFFECT
+   * CPU makes a move
+   */
   useEffect(() => {
     if (!currentVariation || !moveHistory) {
       return;
@@ -190,52 +203,52 @@ export const BoardView = ({ fen, color = 'b' }) => {
     //eslint-disable-next-line
   }, [currentVariation, moveHistory]);
 
-  useEffect(() => {
-    console.log('*** useEffect 05');
-    console.log('Select a line at the beginning [] useEffect');
-    if (color === 'b') {
-      const newLine = selectRandomLine();
-      if (newLine) {
-        setCurrentVariation(newLine);
-        makeCpuMove();
-      }
-    }
-    setTimeout(() => {
-      setInitialized(true);
-    }, 50);
-    //eslint-disable-next-line
-  }, []);
+  // useEffect(() => {
+  //   console.log('*** useEffect 05');
+  //   console.log('Select a line at the beginning [] useEffect');
+  //   if (color === 'b') {
+  //     const newLine = findAndSelectVariation();
+  //     if (newLine) {
+  //       // setCurrentVariation(newLine);
+  //       makeCpuMove();
+  //     }
+  //   }
+  //   setTimeout(() => {
+  //     setInitialized(true);
+  //   }, 50);
+  //   //eslint-disable-next-line
+  // }, []);
 
-  useEffect(() => {
-    console.log('*** useEffect 06');
-    console.log(
-      'Checking if a line is completed or not, currentLine, moveHistory.length',
-    );
-
-    const isLineCompleted =
-      currentVariation && !currentVariation.moves[moveHistory.length];
-    if (isLineCompleted) {
-      const completedVariation = currentVariation.key;
-      console.log('currentVariation', currentVariation);
-      console.log('completedVariation', completedVariation);
-      completeLine(completedVariation);
-
-      /**
-       * Refactor to make it move after accepting the alert
-       */
-      const newLine = selectRandomLine();
-      console.log('Found a new line: ', newLine);
-      if (newLine) {
-        resetGame();
-        setCurrentVariation(newLine);
-        if (color === 'b') {
-          console.log('CPU makes move');
-          makeCpuMove();
-        }
-      }
-    }
-    //eslint-disable-next-line
-  }, [currentVariation, moveHistory.length]);
+  // useEffect(() => {
+  //   console.log('*** useEffect 06');
+  //   console.log(
+  //     'Checking if a line is completed or not, currentLine, moveHistory.length',
+  //   );
+  //
+  //   const isLineCompleted =
+  //     currentVariation && !currentVariation.moves[moveHistory.length];
+  //   if (isLineCompleted) {
+  //     const completedVariation = currentVariation.key;
+  //     console.log('currentVariation', currentVariation);
+  //     console.log('completedVariation', completedVariation);
+  //     completeLine(completedVariation);
+  //
+  //     /**
+  //      * Refactor to make it move after accepting the alert
+  //      */
+  //     const newLine = findAndSelectVariation();
+  //     console.log('Found a new line: ', newLine);
+  //     if (newLine) {
+  //       // resetGame();
+  //       // setCurrentVariation(newLine);
+  //       if (color === 'b') {
+  //         console.log('CPU makes move');
+  //         makeCpuMove();
+  //       }
+  //     }
+  //   }
+  //   //eslint-disable-next-line
+  // }, [currentVariation, moveHistory.length]);
 
   /**
    * Function calls
@@ -255,7 +268,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
     console.log('validateUserMove');
     const newMoveHistory = [...moveHistory, move];
     const remainingVariations = allVariationsInOpening.filter(
-      line => !completedVariations.includes(line.variationKey),
+      line => !completedVariationsInOpening.includes(line.variationKey),
     );
 
     const currentVariation = remainingVariations.find(line => {
@@ -267,7 +280,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
     if (currentVariation) {
       console.log(
         'Current Line:',
-        currentOpeningName,
+        currentOpeningKey,
         currentVariation.variationKey,
       );
       dispatch({
@@ -284,7 +297,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
         nextMove ? nextMove : 'End of scenario line',
       );
 
-      setCurrentVariation(currentVariation);
+      // setCurrentVariation(currentVariation);
       setMoveHistory(newMoveHistory);
       return true;
     } else {
@@ -344,8 +357,11 @@ export const BoardView = ({ fen, color = 'b' }) => {
   };
 
   const makeCpuMove = () => {
+    console.log('makeCpuMove', currentVariation);
+    const moves = findMoveByKeys(currentOpeningKey, currentVariation.key);
+    console.log('moves', moves);
     if (currentVariation) {
-      const nextMove = currentVariation.moves[moveHistory.length];
+      const nextMove = moves[moveHistory.length];
 
       if (nextMove) {
         console.log('CPU Move:', nextMove);
@@ -394,7 +410,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
         row.push(
           <Square
-            handlePieceDrop={handlePieceDrop}
+            // handlePieceDrop={handlePieceDrop}
             key={square}
             possibleMove={possibleMove}
             size={screenWidth / DIMENSION}
@@ -440,7 +456,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
 
       return (
         <Piece
-          handlePieceDrop={handlePieceDrop}
+          // handlePieceDrop={handlePieceDrop}
           key={square}
           size={screenWidth / DIMENSION}
           top={y}
