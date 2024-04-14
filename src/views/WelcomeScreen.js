@@ -9,13 +9,12 @@ import { useNavigation } from '@react-navigation/native';
 import openingData from '../data/openingdb.json';
 import { BlurView } from '@react-native-community/blur';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getCompletedVariationsByOpeningKey } from '../state/selectors';
+import { useDispatch } from 'react-redux';
+import DebugView from './DebugView';
 
 export const WelcomeScreen = () => {
   const navigation = useNavigation();
   const openings = openingData.openings;
-  console.log(openings);
 
   /**
    * Storing all openings from database to redux
@@ -44,6 +43,7 @@ export const WelcomeScreen = () => {
         }}>
         <Text>START</Text>
       </TouchableOpacity>
+      <DebugView openingKey={'CaroKann'} />
       <TouchableOpacity
         onPress={() => {
           setShowHelp(true);
