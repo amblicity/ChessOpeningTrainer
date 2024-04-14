@@ -19,6 +19,9 @@ export const WelcomeScreen = () => {
 
   /**
    * Storing all openings from database to redux
+   * Later this database will be loaded from a server
+   * and updated. Furthermore InAppPurchases can influence
+   * the possible usage of some openings. Think: "Buy CaroKann".
    */
   const dispatch = useDispatch();
   dispatch({
