@@ -8,22 +8,32 @@ import {
   View,
 } from 'react-native';
 import { BoardView } from '../components/BoardView';
-import openingData from '../data/openingdb.json';
 
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { BlurView } from '@react-native-community/blur';
 import {
+  getAllVariationsByOpeningKey,
   getCompletedVariationsByOpeningKey,
   getMovesByOpeningAndVariationKey,
 } from '../state/selectors';
 
-const openings = openingData.openings;
+/**
+ * This is known from the previous screen
+ */
 const currentlySelectedOpening = state => state.currentPlay.selectedOpening;
+const startingPosititon = state => state.currentPlay.startingPosition;
 
 export const PlayOpeningView = () => {
+  /**
+   * This state is used for the ? Button at top right
+   */
   const [showHelp, setShowHelp] = useState(false);
   const [commentaryForNextMove, setCommentaryForNextMove] = useState('');
+
+  /**
+   * React Native Navigation System
+   */
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -35,28 +45,29 @@ export const PlayOpeningView = () => {
   }, [navigation]);
 
   const selectedOpeningName = useSelector(currentlySelectedOpening);
+  const startingPositionFEN = useSelector(startingPosititon);
   const userColor = useSelector(state => state.currentPlay.playingAs);
 
-  const allVariationsInOpening =
-    openings.find(opening => opening.key === selectedOpeningName)?.variations ||
-    [];
+  const allVariationsInOpening = useSelector(state =>
+    getAllVariationsByOpeningKey(state, 'CaroKann'),
+  );
 
-  // console.log('allVariationsInOpening', allVariationsInOpening);
+  console.log('allVariationsInOpening', allVariationsInOpening);
 
   const completedVariations = useSelector(state =>
     getCompletedVariationsByOpeningKey(state, 'CaroKann'),
   );
 
-  const moves = useSelector(state =>
+  console.log('completedVariations', completedVariations);
+
+  const movesInVariation = useSelector(state =>
     getMovesByOpeningAndVariationKey(state, 'CaroKann', 'QICK'),
   );
 
-  console.log(moves);
-
-  // console.log('completedVariations', completedVariations);
+  console.log('moves in variation', movesInVariation);
 
   const remainingVariations = allVariationsInOpening.filter(
-    line => !completedVariations.includes(line.variationKey),
+    variation => !completedVariations.includes(variation.key),
   );
 
   // console.log('remainingVariations', remainingVariations);
@@ -88,7 +99,7 @@ export const PlayOpeningView = () => {
         <Text style={styles.headerText}>{selectedOpeningName}</Text>
         <Text style={styles.headerText}>Playing as {userColor}</Text>
       </View>
-      <BoardView fen={openingData.startingFEN} color={userColor} />
+      <BoardView fen={startingPositionFEN} color={userColor} />
       <View style={styles.linesList}>
         <Text style={{ color: 'black', marginBottom: 10 }}>Completed</Text>
         {completedVariations.length > 0 ? (

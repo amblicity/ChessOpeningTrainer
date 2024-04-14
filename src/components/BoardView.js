@@ -21,6 +21,7 @@ const currentlySelectedOpening = state => state.currentPlay.selectedOpening;
 
 export const BoardView = ({ fen, color = 'b' }) => {
   const dispatch = useDispatch();
+  console.log(fen);
 
   /**
    * Init
