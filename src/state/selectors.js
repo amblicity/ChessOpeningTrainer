@@ -1,45 +1,37 @@
 import { createSelector } from 'reselect';
 import { useSelector } from 'react-redux';
 
-/**
- * Memoized selector to get the names of all completed variations for a given opening key.
- * Uses createSelector from reselect to ensure memoization.
- * @param {Object} state The entire Redux state.
- * @param {String} openingKey The key of the opening to inspect.
- * @returns {String[]} An array of names of completed variations.
- */
-export const getCompletedVariationsByOpeningKey = createSelector(
-  [
-    state => state.db.openings,
-    state => state.progress.completedVariations,
-    (state, openingKey) => openingKey,
-  ],
+// Basic selectors to fetch data from the state
+const getAllOpenings = state => state.db.openings;
+const getCompletedVariations = state => state.progress.completedVariations;
+
+// Selector to get completed variations and the opening name for a specific opening key
+export const getCompletedVariationsAndOpeningName = createSelector(
+  [getAllOpenings, getCompletedVariations, (state, openingKey) => openingKey],
   (openings, completedVariations, openingKey) => {
     const opening = openings.find(o => o.key === openingKey);
-    return opening
-      ? opening.variations
-          .filter(
-            v =>
-              completedVariations[openingKey] &&
-              completedVariations[openingKey][v.key] &&
-              completedVariations[openingKey][v.key].isCompleted,
-          )
-          .map(v => v.name)
-      : [];
+    if (!opening) {
+      return { openingName: '', completedVariations: [] };
+    }
+    const completedVariationsInfo = opening.variations
+      .filter(
+        v =>
+          completedVariations[openingKey] &&
+          completedVariations[openingKey][v.key] &&
+          completedVariations[openingKey][v.key].isCompleted,
+      )
+      .map(v => ({ key: v.key, name: v.name }));
+    return {
+      openingName: opening.name,
+      completedVariations: completedVariationsInfo,
+    };
   },
 );
 
-/**
- * Selector to get the moves of a specific variation within a specific opening.
- * Uses both openingKey and variationKey to identify the exact variation.
- * @param {Object} state The entire Redux state.
- * @param {String} openingKey The key of the opening where the variation is located.
- * @param {String} variationKey The key of the variation to inspect.
- * @returns {String[]} An array of moves for the specified variation.
- */
+// Selector to get the moves of a specific variation within a specific opening
 export const getMovesByOpeningAndVariationKey = createSelector(
   [
-    state => state.db.openings,
+    getAllOpenings,
     (state, openingKey) => openingKey,
     (state, openingKey, variationKey) => variationKey,
   ],
@@ -55,33 +47,22 @@ export const getMovesByOpeningAndVariationKey = createSelector(
   },
 );
 
-/**
- * Selector to get all variations of a specific opening identified by its openingKey.
- * @param {Object} state The entire Redux state.
- * @param {String} openingKey The key of the opening to inspect.
- * @returns {Object[]} An array of variations for the specified opening, including name and key.
- */
+// Selector to get all variations of a specific opening identified by its openingKey
 export const getAllVariationsByOpeningKey = createSelector(
-  [state => state.db.openings, (state, openingKey) => openingKey],
+  [getAllOpenings, (state, openingKey) => openingKey],
   (openings, openingKey) => {
-    // Find the specified opening by its key
     const opening = openings.find(o => o.key === openingKey);
     if (opening) {
-      // Return all variations of the found opening, including both name and key
       return opening.variations.map(variation => ({
         name: variation.name,
         key: variation.key,
       }));
     }
-    // Return an empty array if no matching opening is found
     return [];
   },
 );
 
-/**
- * Currently Playing as selectors
- * @returns {string|any}
- */
+// React hooks to access current play information from state
 export const useCurrentOpening = () =>
   useSelector(state => state.currentPlay.selectedOpening);
 
