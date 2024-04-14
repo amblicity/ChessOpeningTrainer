@@ -5,7 +5,7 @@
       "name": "Caro-Kann Defense",
       "key": "CaroKann",
       "information": "The Caro-Kann Defense is a common defense against e4, characterized by d4 and c6. It aims for a solid, yet flexible position.",
-      "initialPlayerColor": "BLACK",
+      "initialPlayerColor": "b",
       "variations": [
         {
           "name": "Quick Init-CaroKann",
