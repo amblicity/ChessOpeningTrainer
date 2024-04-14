@@ -2,272 +2,35 @@
   "startingFEN": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   "openings": [
     {
-      "name": "Ruy Lopez",
-      "key": "RuyLopez",
-      "information": "Detailed information about Ruy Lopez",
-      "preferredColor": "white",
-      "variations": [
-        {
-          "line": "Morphy Defense",
-          "moves": [
-            "e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "d6"
-          ],
-          "commentary": [
-            "White opens by controlling the center and preparing to develop the bishop and queen.",
-            "Black mirrors White’s pawn move, fighting for central control.",
-            "White develops the knight, targeting the e5 pawn.",
-            "Black develops the knight, defending the e5 pawn.",
-            "White pins the knight, which is a key defender of the e5 pawn.",
-            "Black pushes the bishop, preparing to expand on the queenside.",
-            "White retreats the bishop, maintaining pressure on the e5 pawn.",
-            "Black develops another knight, attacking the e4 pawn.",
-            "White castles, safeguarding the king and connecting the rooks.",
-            "Black prepares to castle, enhancing king safety.",
-            "White moves the rook to the open file, supporting e4 and preparing for central expansion.",
-            "Black gains space on the queenside, challenging White’s bishop.",
-            "White retreats the bishop but keeps pressure on the center.",
-            "Black shores up the e5 pawn, preparing to develop the dark-squared bishop."
-          ]
-        },
-        {
-          "line": "Closed Defense",
-          "moves": [
-            "e4", "e5", "Nc3", "Nc6", "Bb5", "a6", "Ba4", "Nf6", "O-O", "Be7", "Re1", "b5", "Bb3", "O-O", "c3", "d6"
-          ],
-          "commentary": [
-            "White opens by controlling the center, paving the way for queen and bishop development.",
-            "Black mirrors White’s move, fighting for central control.",
-            "White develops a knight, eyeing the e5 pawn.",
-            "Black develops a knight, defending the e5 pawn.",
-            "White’s bishop move initiates the Ruy Lopez, pinning the knight.",
-            "Black challenges the bishop, looking to gain queenside space.",
-            "White retreats the bishop while keeping an eye on the knight.",
-            "Black develops another knight, attacking the e4 pawn.",
-            "White castles, enhancing king safety and connecting the rooks.",
-            "Black’s bishop move prepares for kingside castling.",
-            "White positions the rook on the open file, supporting the e4 pawn.",
-            "Black expands on the queenside, pushing White’s bishop.",
-            "White’s bishop retreats but maintains central influence.",
-            "Black castles, achieving king safety.",
-            "White prepares to support the center with d4.",
-            "Black reinforces the e5 pawn and clears the way for the light-squared bishop."
-          ]
-        },
-        {
-          "line": "Exchange Variation",
-          "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6", "Bxc6"],
-          "commentary": [
-            "White initiates the game by controlling the center, preparing for further piece development.",
-            "Black responds in kind, mirroring White’s control of the center.",
-            "White develops the knight, aiming at the e5 pawn.",
-            "Black’s knight move defends the e5 pawn, contributing to central stability.",
-            "The Bb5 move introduces the Ruy Lopez, targeting Black’s knight.",
-            "Black’s a6 challenges White’s bishop, forcing a decision.",
-            "White opts to exchange the bishop for the knight, altering the pawn structure."
-          ]
-        },
-        {
-          "line": "Berlin Defense",
-          "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6"],
-          "commentary": [
-            "White starts by seizing central space, opening up lines for the queen and bishop.",
-            "Black plays symmetrically, countering White’s central control.",
-            "White develops the knight, pressuring Black’s e5 pawn.",
-            "Black’s knight move both develops a piece and protects the e5 pawn.",
-            "White’s bishop move introduces the Ruy Lopez, pinning the knight against the king.",
-            "Black counters by developing another knight, attacking White’s e4 pawn."
-          ]
-        },
-        {
-          "line": "Schliemann Defense",
-          "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "f5"],
-          "commentary": [
-            "White opens by controlling the center, facilitating queen and bishop development.",
-            "Black mirrors White’s pawn move, contesting the central space.",
-            "White develops the knight, targeting Black’s e5 pawn.",
-            "Black’s knight move defends the e5 pawn and aids in central control.",
-            "The bishop move to b5 is a classic Ruy Lopez, pressuring the knight.",
-            "Black’s f5 is an aggressive counter, challenging White’s pawn structure."
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Queens Gambit Accepted",
-      "key": "QueensGambitAccepted",
-      "information": "Detailed information about Queens Gambit Accepted",
-      "preferredColor": "black",
-      "variations": [
-      ],
-      "commentary": []
-    },
-    {
       "name": "Caro-Kann Defense",
       "key": "CaroKann",
       "information": "The Caro-Kann Defense is a common defense against e4, characterized by d4 and c6. It aims for a solid, yet flexible position.",
-      "preferredColor": "Black",
+      "initialPlayerColor": "BLACK",
       "variations": [
         {
-          "line": "Classical Variation",
+          "name": "Quick Init-CaroKann",
+          "key": "QICK",
           "moves": [
             "e4",
             "c6",
             "d4",
-            "d5",
-            "Nc3",
-            "dxe4",
-            "Nxe4",
-            "Bf5",
-            "Ng3",
-            "Bg6",
-            "h4",
-            "h6"
+            "d5"
           ],
           "commentary": [
-            "White starts with the king's pawn opening.",
-            "Black responds with the Caro-Kann Defense, preparing d5.",
-            "White supports the center.",
-            "Black challenges the center immediately.",
-            "White develops the knight, supporting e4.",
-            "Black captures the e4 pawn.",
-            "White knight recaptures, centralizing.",
-            "Black develops the bishop with a threat.",
-            "White knight moves, eyeing the f5 square.",
-            "Black's bishop retreats to a safer square.",
-            "White advances the h-pawn, pressuring the kingside.",
-            "Black responds to prevent g4."
+            "first move", "sec move", "third move", "four"
           ]
         },
         {
-          "line": "Advance Variation",
+          "name": "Quick Init-CaroKann2",
+          "key": "QICK2",
           "moves": [
-            "e4",
-            "c6",
-            "d4",
-            "d5",
-            "e5",
-            "Bf5",
-            "Nf3",
-            "e6",
-            "Be2",
-            "Nd7",
-            "O-O",
-            "Ne7"
-          ],
-          "commentary": [
-            "White starts with the king's pawn opening.",
-            "Black responds with the Caro-Kann Defense.",
-            "White supports the center.",
-            "Black challenges the center.",
-            "White advances the pawn, gaining space.",
-            "Black develops the bishop outside the pawn chain.",
-            "White develops the knight, eyeing e5.",
-            "Black solidifies the center.",
-            "White develops the bishop, aiming for castling.",
-            "Black repositions the knight for central support.",
-            "White castles king-side.",
-            "Black develops the knight, preparing to castle."
-          ]
-        },
-        {
-          "line": "Panov-Botvinnik Attack",
-          "moves": [
-            "e4",
-            "c6",
-            "d4",
-            "d5",
-            "exd5",
-            "cxd5",
+            "e3",
+            "c5",
             "c4",
-            "Nf6",
-            "Nc3",
-            "e6",
-            "Nf3",
-            "Be7"
+            "d6"
           ],
           "commentary": [
-            "White starts with the king's pawn opening.",
-            "Black responds with the Caro-Kann Defense.",
-            "White supports the center.",
-            "Black challenges the center.",
-            "White captures the d5 pawn, opening the center.",
-            "Black recaptures, maintaining central presence.",
-            "White challenges the d5 pawn, looking to undermine Black's center.",
-            "Black develops the knight, defending d5.",
-            "White develops another knight, adding pressure to the center.",
-            "Black solidifies the center and prepares to develop the bishop.",
-            "White develops the knight, controlling the center squares.",
-            "Black develops the bishop, preparing to castle."
-          ]
-        },
-        {
-          "line": "Modern Variation",
-          "moves": [
-            "e4",
-            "c6",
-            "d4",
-            "d5",
-            "Nc3",
-            "dxe4",
-            "Nxe4",
-            "Nd7",
-            "Ng5",
-            "Ngf6",
-            "N1f3",
-            "h6",
-            "Nh3",
-            "e6"
-          ],
-          "commentary": [
-            "White starts with the king's pawn opening.",
-            "Black responds with the Caro-Kann Defense.",
-            "White supports the center.",
-            "Black challenges the center.",
-            "White develops the knight, supporting e4.",
-            "Black captures the e4 pawn.",
-            "White knight recaptures, centralizing.",
-            "Black repositions the knight, aiming to recapture on e4.",
-            "White's knight jumps forward, threatening f7.",
-            "Black defends with the knight, also eyeing e4.",
-            "White develops another knight, reinforcing e4.",
-            "Black plays h6, asking the knight to decide.",
-            "White's knight retreats to h3, keeping tension.",
-            "Black solidifies the pawn structure in the center."
-          ]
-        },
-        {
-          "line": "Exchange Variation",
-          "moves": [
-            "e4",
-            "c6",
-            "d4",
-            "d5",
-            "exd5",
-            "cxd5",
-            "Bd3",
-            "Nc6",
-            "c3",
-            "Nf6",
-            "Bf4",
-            "Bg4",
-            "Qb3",
-            "Qd7"
-          ],
-          "commentary": [
-            "White starts with the king's pawn opening.",
-            "Black responds with the Caro-Kann Defense.",
-            "White supports the center.",
-            "Black challenges the center.",
-            "White captures on d5, leading to an open structure.",
-            "Black recaptures on d5, maintaining a central pawn.",
-            "White develops the bishop, targeting h7.",
-            "Black develops the knight, contesting the center.",
-            "White solidifies the pawn structure.",
-            "Black develops the knight, eyeing e4.",
-            "White develops the bishop, aiming at the black kingside.",
-            "Black pins the knight with the bishop.",
-            "White pressures the b7 pawn with the queen.",
-            "Black defends with the queen, also unpinning."
+            "first move2", "sec move2", "third move2", "four2"
           ]
         }
       ]

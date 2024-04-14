@@ -8,7 +8,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
-export const SelectScenarioView = () => {
+export const SelectOpeningView = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -22,7 +22,7 @@ export const SelectScenarioView = () => {
 
   const setSelectedOpening = (opening, playingAs) => {
     dispatch({
-      type: 'currentPlay/setScenario',
+      type: 'currentPlay/setSelectedOpening',
       payload: { opening, playingAs },
     });
 

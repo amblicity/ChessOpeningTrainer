@@ -13,10 +13,15 @@ import openingData from '../data/openingdb.json';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { BlurView } from '@react-native-community/blur';
+import {
+  getCompletedVariationsByOpeningKey,
+  getMovesByOpeningAndVariationKey,
+} from '../state/selectors';
 
-const currentScenarioSelector = state => state.currentPlay.scenario;
+const openings = openingData.openings;
+const currentlySelectedOpening = state => state.currentPlay.selectedOpening;
 
-export const PlayingScenarioView = () => {
+export const PlayOpeningView = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [commentaryForNextMove, setCommentaryForNextMove] = useState('');
   const navigation = useNavigation();
@@ -29,52 +34,65 @@ export const PlayingScenarioView = () => {
     });
   }, [navigation]);
 
-  const currentLine = useSelector(state => state.currentPlay.line);
+  const selectedOpeningName = useSelector(currentlySelectedOpening);
+  const userColor = useSelector(state => state.currentPlay.playingAs);
+
+  const allVariationsInOpening =
+    openings.find(opening => opening.key === selectedOpeningName)?.variations ||
+    [];
+
+  // console.log('allVariationsInOpening', allVariationsInOpening);
+
+  const completedVariations = useSelector(state =>
+    getCompletedVariationsByOpeningKey(state, 'CaroKann'),
+  );
+
+  const moves = useSelector(state =>
+    getMovesByOpeningAndVariationKey(state, 'CaroKann', 'QICK'),
+  );
+
+  console.log(moves);
+
+  // console.log('completedVariations', completedVariations);
+
+  const remainingVariations = allVariationsInOpening.filter(
+    line => !completedVariations.includes(line.variationKey),
+  );
+
+  // console.log('remainingVariations', remainingVariations);
+
+  const currentVariationKey = useSelector(
+    state => state.currentPlay.variationKey,
+  );
+  console.log('currentVariation', currentVariationKey);
   const currentMoveIndex = useSelector(state => state.currentPlay.moveIndex);
 
-  const scenarioName = useSelector(currentScenarioSelector);
-  const completedLines = useSelector(
-    state => state.progress.completedLines[scenarioName],
-  );
-  const openings = openingData.openings;
-
-  const userColor = useSelector(state => state.currentPlay.playingAs);
-  const scenarioLines =
-    openings.find(opening => opening.key === scenarioName)?.variations || [];
-
-  const remainingLines = scenarioLines.filter(
-    line => !completedLines.includes(line.line),
-  );
-
   useEffect(() => {
-    const comment = scenarioLines.find(variation => {
-      // console.log('variation.line', variation.line);
-      // console.log('currentline', currentLine);
-      if (variation.line === currentLine) {
-        // console.log(
-        //   'comment in variation: ',
-        //   variation.commentary[currentMoveIndex + 1],
-        // );
+    allVariationsInOpening.find(variation => {
+      if (variation.variationKey === currentVariationKey) {
+        console.log(
+          'comment in variation: ',
+          variation.commentary[currentMoveIndex + 1],
+        );
         setCommentaryForNextMove(variation.commentary[currentMoveIndex + 1]);
       }
     });
-  }, [currentLine, currentMoveIndex]);
+  }, [currentVariationKey, currentMoveIndex]);
 
+  /**
+   * Rendering board & remaining + completed variations
+   */
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>{scenarioName}</Text>
+        <Text style={styles.headerText}>{selectedOpeningName}</Text>
         <Text style={styles.headerText}>Playing as {userColor}</Text>
       </View>
-      <BoardView
-        fen={openingData.startingFEN}
-        scenarioName={scenarioName}
-        color={userColor}
-      />
+      <BoardView fen={openingData.startingFEN} color={userColor} />
       <View style={styles.linesList}>
         <Text style={{ color: 'black', marginBottom: 10 }}>Completed</Text>
-        {completedLines.length > 0 ? (
-          completedLines.map((line, index) => (
+        {completedVariations.length > 0 ? (
+          completedVariations.map((line, index) => (
             <Text key={index} style={styles.headerText}>
               {line}
             </Text>
@@ -85,9 +103,9 @@ export const PlayingScenarioView = () => {
         <Text>----</Text>
 
         <Text style={{ color: 'black', marginBottom: 10 }}>Remaining</Text>
-        {remainingLines.map((list, index) => (
+        {remainingVariations.map((variation, index) => (
           <Text key={index} style={styles.headerText}>
-            {list.line}
+            {variation.name}
           </Text>
         ))}
       </View>

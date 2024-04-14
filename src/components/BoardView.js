@@ -7,11 +7,17 @@ import { Chess } from 'chess.js';
 import Square from './Square';
 import Piece from './Piece';
 
+/**
+ * Creating the board data
+ */
 const DIMENSION = 8;
 const COLUMN_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const screenWidth = Dimensions.get('window').width - 32;
 
-const currentScenarioName = state => state.currentPlay.scenario;
+/**
+ * The user has chosen an opening to learn
+ */
+const currentlySelectedOpening = state => state.currentPlay.selectedOpening;
 
 export const BoardView = ({ fen, color = 'b' }) => {
   const dispatch = useDispatch();
@@ -25,7 +31,8 @@ export const BoardView = ({ fen, color = 'b' }) => {
    * Data
    */
   const openings = openingData.openings;
-  const scenarioName = useSelector(currentScenarioName);
+  const currentOpeningName = useSelector(currentlySelectedOpening);
+  // console.log('currentOpeningName', currentOpeningName);
 
   /**
    * Chess.JS & Board Layout
@@ -97,23 +104,28 @@ export const BoardView = ({ fen, color = 'b' }) => {
   /**
    * Calculating Current Line & Move-History
    */
-  const scenarioLines =
-    openings.find(opening => opening.key === scenarioName)?.variations || [];
-  const [currentLine, setCurrentLine] = useState(null);
+  const allVariationsInOpening =
+    openings.find(opening => opening.key === currentOpeningName)?.variations ||
+    [];
+  // console.log('allVariationsInOpening', allVariationsInOpening);
+  const [currentVariation, setCurrentVariation] = useState(null);
   const [moveHistory, setMoveHistory] = useState([]);
-  const completedLines = useSelector(
-    state => state.progress.completedLines[scenarioName],
+  const completedVariations = useSelector(
+    state => state.progress.completedVariations[currentOpeningName],
   );
 
   useEffect(() => {
+    console.log('*** useEffect 01');
     console.log('Starting FEN: ', fen);
     setGame(new Chess(fen));
   }, [fen]);
 
   const selectRandomLine = () => {
-    const remainingLines = scenarioLines.filter(
-      line => !completedLines.includes(line.line),
+    console.log('selectRandomLine()');
+    const remainingLines = allVariationsInOpening.filter(
+      variation => !completedVariations.includes(variation.variationKey),
     );
+    console.log('remaining lines', remainingLines);
 
     if (remainingLines.length === 0) {
       alert('All lines in this scenario are completed!');
@@ -129,65 +141,83 @@ export const BoardView = ({ fen, color = 'b' }) => {
    */
   const completeLine = lineName => {
     dispatch({
-      type: 'progress/addCompletedLine',
-      payload: { scenario: scenarioName, line: lineName },
+      type: 'progress/addCompletedVariation',
+      payload: { selectedOpening: currentOpeningName, variationKey: lineName },
     });
-    alert('Completed line: ' + lineName);
+    alert('Completed a variation: ' + lineName);
   };
 
   /**
    * After opening has changed
    */
   useEffect(() => {
+    console.log('*** useEffect 02');
+    console.log('scenarioName useEffect', currentOpeningName);
     const newLine = selectRandomLine();
     console.log('New Variation after state update:', newLine);
     if (newLine) {
-      setCurrentLine(newLine);
+      setCurrentVariation(newLine);
       resetGame();
       if (color === 'b') {
         makeCpuMove();
       }
     }
     //eslint-disable-next-line
-  }, [scenarioName]);
+  }, [currentOpeningName]);
 
   useEffect(() => {
-    console.log('CreateBoardData useEffect');
+    // console.log('*** useEffect 03');
+    console.log('Re-rendering Board');
     setBoard(createSquareRendering(game));
     //eslint-disable-next-line
   }, [game]);
 
   useEffect(() => {
-    console.log('CPU needs to make move? useEffect');
-    if (game.turn() !== color && currentLine) {
+    if (!currentVariation || !moveHistory) {
+      return;
+    }
+    console.log('*** useEffect 04');
+    console.log(
+      'currentVariation, moveHistory useEffect',
+      currentVariation,
+      moveHistory,
+    );
+    if (game.turn() !== color && currentVariation) {
+      console.log('gameTurn > cpu useEffect');
       makeCpuMove();
     }
     //eslint-disable-next-line
-  }, [currentLine, moveHistory]);
+  }, [currentVariation, moveHistory]);
 
   useEffect(() => {
-    console.log('Select a line at the beginning useEffect');
+    console.log('*** useEffect 05');
+    console.log('Select a line at the beginning [] useEffect');
     if (color === 'b') {
       const newLine = selectRandomLine();
       if (newLine) {
-        setCurrentLine(newLine);
+        setCurrentVariation(newLine);
         makeCpuMove();
       }
     }
     setTimeout(() => {
       setInitialized(true);
-    }, 500);
+    }, 50);
     //eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    console.log('Checking if a line is completed or not');
+    console.log('*** useEffect 06');
+    console.log(
+      'Checking if a line is completed or not, currentLine, moveHistory.length',
+    );
 
     const isLineCompleted =
-      currentLine && !currentLine.moves[moveHistory.length];
+      currentVariation && !currentVariation.moves[moveHistory.length];
     if (isLineCompleted) {
-      const completedLineName = currentLine.line;
-      completeLine(completedLineName);
+      const completedVariation = currentVariation.key;
+      console.log('currentVariation', currentVariation);
+      console.log('completedVariation', completedVariation);
+      completeLine(completedVariation);
 
       /**
        * Refactor to make it move after accepting the alert
@@ -196,7 +226,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
       console.log('Found a new line: ', newLine);
       if (newLine) {
         resetGame();
-        setCurrentLine(newLine);
+        setCurrentVariation(newLine);
         if (color === 'b') {
           console.log('CPU makes move');
           makeCpuMove();
@@ -204,7 +234,7 @@ export const BoardView = ({ fen, color = 'b' }) => {
       }
     }
     //eslint-disable-next-line
-  }, [currentLine, moveHistory.length]);
+  }, [currentVariation, moveHistory.length]);
 
   /**
    * Function calls
@@ -214,38 +244,46 @@ export const BoardView = ({ fen, color = 'b' }) => {
     const newGame = new Chess(fen);
     setGame(newGame);
     setMoveHistory([]);
-    setCurrentLine(null);
+    setCurrentVariation(null);
     setSelectedSquare(null);
     setPossibleMoves([]);
     setBoard(createSquareRendering(newGame));
   };
 
   const validateUserMove = move => {
+    console.log('validateUserMove');
     const newMoveHistory = [...moveHistory, move];
-    const remainingLines = scenarioLines.filter(
-      line => !completedLines.includes(line.line),
+    const remainingVariations = allVariationsInOpening.filter(
+      line => !completedVariations.includes(line.variationKey),
     );
 
-    const matchedLine = remainingLines.find(line => {
+    const currentVariation = remainingVariations.find(line => {
       return newMoveHistory.every(
         (mhMove, index) => line.moves[index] === mhMove,
       );
     });
 
-    if (matchedLine) {
-      console.log('Current Line:', scenarioName, matchedLine.line);
+    if (currentVariation) {
+      console.log(
+        'Current Line:',
+        currentOpeningName,
+        currentVariation.variationKey,
+      );
       dispatch({
-        type: 'currentPlay/setLine',
-        payload: { line: matchedLine.line, moveIndex: moveHistory.length },
+        type: 'currentPlay/setVariation',
+        payload: {
+          variationKey: currentVariation.variationKey,
+          moveIndex: moveHistory.length,
+        },
       });
       const nextMoveIndex = newMoveHistory.length;
-      const nextMove = matchedLine.moves[nextMoveIndex + 1];
+      const nextMove = currentVariation.moves[nextMoveIndex + 1];
       console.log(
         'Next Expected User-Move:',
         nextMove ? nextMove : 'End of scenario line',
       );
 
-      setCurrentLine(matchedLine);
+      setCurrentVariation(currentVariation);
       setMoveHistory(newMoveHistory);
       return true;
     } else {
@@ -305,22 +343,28 @@ export const BoardView = ({ fen, color = 'b' }) => {
   };
 
   const makeCpuMove = () => {
-    if (currentLine) {
-      const nextMove = currentLine.moves[moveHistory.length];
+    if (currentVariation) {
+      const nextMove = currentVariation.moves[moveHistory.length];
 
       if (nextMove) {
         console.log('CPU Move:', nextMove);
-        const moveResult = game.move(nextMove);
-        if (moveResult) {
-          dispatch({
-            type: 'currentPlay/setLine',
-            payload: { line: currentLine.line, moveIndex: moveHistory.length },
-          });
-          setGame(new Chess(game.fen()));
-          setMoveHistory(prev => [...prev, nextMove]);
-        } else {
-          console.error('Invalid CPU move:', nextMove);
-        }
+        setTimeout(() => {
+          const moveResult = game.move(nextMove);
+          if (moveResult) {
+            console.log('gm?', currentVariation);
+            dispatch({
+              type: 'currentPlay/setVariation',
+              payload: {
+                variationKey: currentVariation.key,
+                moveIndex: moveHistory.length,
+              },
+            });
+            setGame(new Chess(game.fen()));
+            setMoveHistory(prev => [...prev, nextMove]);
+          } else {
+            console.error('Invalid CPU move:', nextMove);
+          }
+        }, 400);
       }
     }
   };
