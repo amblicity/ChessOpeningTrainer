@@ -267,13 +267,35 @@ export const BoardView = ({ fen, color = 'BLACK' }) => {
   const validateUserMove = move => {
     console.log('validateUserMove');
     const newMoveHistory = [...moveHistory, move];
-    const remainingVariations = allVariationsInOpening.filter(
-      line => !completedVariationsInOpening.includes(line.variationKey),
-    );
+    console.log('allVariationsInOpening', allVariationsInOpening);
+    console.log('completedVariationsInOpening', completedVariationsInOpening);
 
-    const currentVariation = remainingVariations.find(line => {
-      return newMoveHistory.every(
-        (mhMove, index) => line.moves[index] === mhMove,
+    console.log('validateUserMove');
+
+    // Get full opening data based on the opening key
+    const opening = openingData.openings.find(o => o.key === currentOpeningKey);
+    if (!opening) {
+      console.error('Opening not found');
+      return;
+    }
+
+    // Fetch completion data from state or context where this function is used
+    const completedVariationsInOpening = {}; // This should be fetched appropriately
+
+    // Filter out completed variations
+    const remainingVariations = opening.variations.filter(
+      variation =>
+        !(
+          completedVariationsInOpening[variation.key] &&
+          completedVariationsInOpening[variation.key].isCompleted
+        ),
+    );
+    console.log('remainingVariations', remainingVariations);
+
+    // Find the current variation by matching move history
+    const currentVariation = remainingVariations.find(variation => {
+      return moveHistory.every(
+        (mhMove, index) => variation.moves && variation.moves[index] === mhMove,
       );
     });
 
