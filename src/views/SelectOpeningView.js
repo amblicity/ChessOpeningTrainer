@@ -23,10 +23,10 @@ export const SelectOpeningView = () => {
     alert('All progress has been reset!');
   };
 
-  const setSelectedOpening = (openingKey, playingAs) => {
+  const setSelectedOpening = (openingKey, playerPlayingAs) => {
     dispatch({
       type: 'currentPlay/setSelectedOpening',
-      payload: { opening: openingKey, playingAs },
+      payload: { opening: openingKey, playerPlayingAs },
     });
     navigation.navigate('Play Opening Lines');
   };
