@@ -74,11 +74,17 @@ export const getCompletedVariationsAndOpeningName = createSelector(
 export const useCurrentOpening = () =>
   useSelector(state => state.currentPlay.selectedOpening);
 
-export const usePlayingAs = () =>
-  useSelector(state => state.currentPlay.playingAs);
+export const usePlayerPlayingAs = () =>
+  useSelector(state => state.currentPlay.playerPlayingAs);
 
 export const useCurrentVariation = () =>
   useSelector(state => state.currentPlay.variationKey);
 
+export const useCurrentVariationCompleted = () =>
+  useSelector(state => state.currentPlay.variationCompleted);
+
 export const useCurrentMoveIndex = () =>
   useSelector(state => state.currentPlay.moveIndex);
+
+export const useWhoseTurn = () =>
+  useSelector(state => state.currentPlay.whoseTurn);

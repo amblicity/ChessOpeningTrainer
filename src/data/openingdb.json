@@ -9,12 +9,14 @@
       "variations": [
         {
           "name": "Quick Init-CaroKann",
-          "key": "QICK",
+          "key": "CK_EXC",
           "moves": [
             "e4",
             "c6",
             "d4",
-            "d5"
+            "d5",
+            "exd5",
+            "cxd5"
           ],
           "commentary": [
             "first move", "sec move", "third move", "four"
@@ -22,12 +24,14 @@
         },
         {
           "name": "Quick Init-CaroKann2",
-          "key": "QICK2",
+          "key": "CK_ADV",
           "moves": [
-            "e3",
-            "c5",
-            "c4",
-            "d6"
+            "e4",
+            "c6",
+            "d4",
+            "d5",
+            "e5",
+            "c5"
           ],
           "commentary": [
             "first move2", "sec move2", "third move2", "four2"

@@ -1,8 +1,10 @@
 const initialCurrentPlayState = {
   startingPosition: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
   selectedOpening: '',
-  playingAs: '',
+  playerPlayingAs: '',
+  whoseTurn: '',
   variationKey: '',
+  variationCompleted: false,
   moveIndex: 0,
 };
 
@@ -11,11 +13,12 @@ function setSelectedOpening(state, action) {
   return {
     ...state,
     selectedOpening: action.payload.opening,
-    playingAs: action.payload.playingAs,
+    playerPlayingAs: action.payload.playerPlayingAs,
+    whoseTurn: action.payload.playerPlayingAs === 'b' ? 'cpu' : 'player',
   };
 }
 
-function setVariation(state, action) {
+function setVariationAndMoveIndex(state, action) {
   return {
     ...state,
     variationKey: action.payload.variationKey,
@@ -23,12 +26,41 @@ function setVariation(state, action) {
   };
 }
 
+function setCurrentWhoseTurn(state, action) {
+  return {
+    ...state,
+    whoseTurn: action.payload.whoseTurn,
+  };
+}
+function setVariationAsCompleted(state, action) {
+  return {
+    ...state,
+    variationCompleted: true,
+  };
+}
+
+function resetCurrentPlay(state, action) {
+  return {
+    ...state,
+    whoseTurn: '',
+    moveIndex: 0,
+    variationKey: '',
+    variationCompleted: false,
+  };
+}
+
 export const currentPlayReducer = (state = initialCurrentPlayState, action) => {
   switch (action.type) {
+    case 'currentPlay/reset':
+      return resetCurrentPlay(state, action);
     case 'currentPlay/setSelectedOpening':
       return setSelectedOpening(state, action);
     case 'currentPlay/setVariationAndMoveIndex':
-      return setVariation(state, action);
+      return setVariationAndMoveIndex(state, action);
+    case 'currentPlay/setCurrentWhoseTurn':
+      return setCurrentWhoseTurn(state, action);
+    case 'progress/setVariationAsCompleted':
+      return setVariationAsCompleted(state, action);
     default:
       return state;
   }

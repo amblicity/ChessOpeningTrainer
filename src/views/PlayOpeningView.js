@@ -15,6 +15,7 @@ import { BlurView } from '@react-native-community/blur';
 import {
   getAllVariationsByOpeningKey,
   getMovesByOpeningAndVariationKey,
+  usePlayerPlayingAs,
 } from '../state/selectors';
 
 /**
@@ -45,7 +46,7 @@ export const PlayOpeningView = () => {
 
   const selectedOpeningName = useSelector(currentlySelectedOpening);
   const startingPositionFEN = useSelector(startingPosititon);
-  const userColor = useSelector(state => state.currentPlay.playingAs);
+  const playerPlayingAs = usePlayerPlayingAs();
 
   const allVariationsInOpening = useSelector(state =>
     getAllVariationsByOpeningKey(state, 'CaroKann'),
@@ -96,9 +97,9 @@ export const PlayOpeningView = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>{selectedOpeningName}</Text>
-        <Text style={styles.headerText}>Playing as {userColor}</Text>
+        <Text style={styles.headerText}>Playing as {playerPlayingAs}</Text>
       </View>
-      <BoardView fen={startingPositionFEN} color={userColor} />
+      <BoardView fen={startingPositionFEN} />
       {/*<View style={styles.linesList}>*/}
       {/*  <Text style={{ color: 'black', marginBottom: 10 }}>Completed</Text>*/}
       {/*  {completedVariations.length > 0 ? (*/}

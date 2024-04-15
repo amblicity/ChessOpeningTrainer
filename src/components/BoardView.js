@@ -4,13 +4,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import openingData from '../data/openingdb.json';
 import {
   getAllVariationsByOpeningKey,
-  getVariationByKey,
+  useCurrentMoveIndex,
   useCurrentVariation,
+  useCurrentVariationCompleted,
+  usePlayerPlayingAs,
+  useWhoseTurn,
 } from '../state/selectors'; // Adjust the path to where your selectors are
 
 import { Chess } from 'chess.js';
 import Square from './Square';
 import Piece from './Piece';
+import { setVariationAsCompleted } from '../state/actions';
 
 /**
  * Creating the board data
@@ -19,30 +23,7 @@ const DIMENSION = 8;
 const COLUMN_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const screenWidth = Dimensions.get('window').width - 32;
 
-function findMoveByKeys(openingKey, variationKey) {
-  // Find the opening by the given key
-  const opening = openingData.openings.find(
-    opening => opening.key === openingKey,
-  );
-  if (!opening) {
-    console.log('Opening not found');
-    return null;
-  }
-
-  // Find the variation within the found opening by the given variation key
-  const variation = opening.variations.find(
-    variation => variation.key === variationKey,
-  );
-  if (!variation) {
-    console.log('Variation not found');
-    return null;
-  }
-
-  // Return the moves array if the variation is found
-  return variation.moves;
-}
-
-export const BoardView = ({ fen, color = 'BLACK' }) => {
+export const BoardView = ({ fen }) => {
   const dispatch = useDispatch();
 
   /**
@@ -63,10 +44,40 @@ export const BoardView = ({ fen, color = 'BLACK' }) => {
     state => state.progress.completedVariations[currentOpeningKey],
   );
 
+  const variationIsCompleted = useCurrentVariationCompleted();
+
+  /**
+   * Find moves in openingData.json based on
+   * @param openingKey
+   * @param variationKey
+   * @returns {*|null}
+   */
+  function findMoveByKeys(openingKey, variationKey) {
+    const opening = openingData.openings.find(
+      opening => opening.key === openingKey,
+    );
+    if (!opening) {
+      console.log('Opening not found');
+      return null;
+    }
+
+    const variation = opening.variations.find(
+      variation => variation.key === variationKey,
+    );
+    if (!variation) {
+      console.log('Variation not found');
+      return null;
+    }
+
+    return variation.moves;
+  }
+
   /**
    * Currently playing
    */
   const currentVariation = useCurrentVariation();
+  const playerPlayingAs = usePlayerPlayingAs();
+  const whoseTurn = useWhoseTurn();
 
   /**
    * Chess.JS & Board Layout
@@ -123,31 +134,79 @@ export const BoardView = ({ fen, color = 'BLACK' }) => {
    * DISPATCH
    * Set a variation to currentlyPlaying
    */
-  const setCurrentVariation = variationToSet => {
+  const setCurrentVariationAndMoveIndex = (variationToSet, moveIndex) => {
+    if (!variationToSet) {
+      return;
+    }
+
     dispatch({
       type: 'currentPlay/setVariationAndMoveIndex',
       payload: {
         variationKey: variationToSet,
-        openingKey: currentOpeningKey,
+        moveIndex: moveIndex,
       },
     });
   };
 
-  /**
-   * DISPATCH
-   * Mark a variation as COMPLETE
-   */
-  const completeLine = lineName => {
-    // dispatch({
-    //   type: 'progress/addCompletedVariation',
-    //   // payload: { selectedOpening: currentOpeningName, variationKey: lineName },
-    // });
-    // alert('Completed a variation: ' + lineName);
+  const resetCurrentPlay = () => {
+    if (!variationIsCompleted) {
+      return;
+    }
+
+    dispatch({
+      type: 'currentPlay/reset',
+      payload: {},
+    });
   };
 
+  const setCurrentWhoseTurn = newWhoseTurn => {
+    dispatch({
+      type: 'currentPlay/setCurrentWhoseTurn',
+      payload: {
+        whoseTurn: newWhoseTurn,
+      },
+    });
+  };
+
+  const setVariationAsCompleted = (variationKey, openingKey) => ({
+    type: 'progress/setVariationAsCompleted',
+    payload: { variationKey, openingKey },
+  });
+
   /**
-   * USEEFFECT
-   * updating chess.js with new fen?
+   * ******* USEEFFECTS *******
+   * Initialize App
+   * Update Chess.JS
+   * Rerender Board
+   * On each move
+   * When a variation is done
+   */
+
+  /**
+   * Init
+   */
+  useEffect(() => {
+    console.log('*** useEffect ***');
+    console.log('*** INIT BOARD ***');
+    if (playerPlayingAs === 'b') {
+      const initialVariation = findAndSelectVariation();
+      if (initialVariation) {
+        setCurrentVariationAndMoveIndex(
+          initialVariation.key,
+          moveHistory.length,
+        );
+      }
+    } else {
+      // player playing white
+    }
+    setTimeout(() => {
+      setInitialized(true);
+    }, 50);
+    //eslint-disable-next-line
+  }, []);
+
+  /**
+   * Updating chess.js with new fen
    */
   useEffect(() => {
     console.log('*** useEffect 01');
@@ -156,133 +215,143 @@ export const BoardView = ({ fen, color = 'BLACK' }) => {
   }, [fen]);
 
   /**
-   * USEEFFECT
-   * I guess for rerendering the board only?
+   * Rerender the board
    */
   useEffect(() => {
-    console.log('*** useEffect 03');
-    console.log('Re-rendering Board');
+    console.log('*** Re-rendering Board ***');
     setBoard(createSquareRendering(game));
-    setInitialized(true);
     //eslint-disable-next-line
   }, [game]);
 
   /**
-   * USEEFFECT
-   * Why actually not in initial render?
+   * On each move & The first start
    */
   useEffect(() => {
-    resetGame();
-    console.log('*** useEffect 02');
-    const foundVariation = findAndSelectVariation();
-    console.log('New Variation after state update:', foundVariation.key);
-    if (foundVariation) {
-      setCurrentVariation(foundVariation);
-    }
-    //eslint-disable-next-line
-  }, [currentOpeningKey]);
-
-  /**
-   * USEEFFECT
-   * CPU makes a move
-   */
-  useEffect(() => {
-    if (!currentVariation || !moveHistory) {
+    if (!currentVariation || !moveHistory || !whoseTurn) {
       return;
     }
-    console.log('*** useEffect 04');
+    console.log('*** WHOSETURN useEffect ***');
+    const moves = findMoveByKeys(currentOpeningKey, currentVariation);
     console.log(
-      'currentVariation, moveHistory useEffect',
+      'Checking if a line is completed or not, moves.length, moveHistory.length,currentVariation',
+      moves.length,
+      moveHistory.length,
       currentVariation,
-      moveHistory,
     );
-    if (game.turn() !== color && currentVariation) {
-      console.log('gameTurn > cpu useEffect');
-      makeCpuMove();
+
+    const variationComplete = moves.length === moveHistory.length;
+
+    if (variationComplete) {
+      dispatch(setVariationAsCompleted(currentVariation, currentOpeningKey));
+      return;
     }
+
+    console.log('*** useEffect continues ***');
+    console.log('whoseTurn?', whoseTurn);
+    if (whoseTurn !== 'cpu') {
+      return;
+    }
+
+    console.log('*** CPU DECISION ***');
+    console.log('currentVariation, moveHistory', currentVariation, moveHistory);
+    makeCpuMove();
     //eslint-disable-next-line
-  }, [currentVariation, moveHistory]);
+  }, [whoseTurn, currentVariation]);
 
-  // useEffect(() => {
-  //   console.log('*** useEffect 05');
-  //   console.log('Select a line at the beginning [] useEffect');
-  //   if (color === 'b') {
-  //     const newLine = findAndSelectVariation();
-  //     if (newLine) {
-  //       // setCurrentVariation(newLine);
-  //       makeCpuMove();
-  //     }
-  //   }
-  //   setTimeout(() => {
-  //     setInitialized(true);
-  //   }, 50);
-  //   //eslint-disable-next-line
-  // }, []);
+  /**
+   * After completing a variation (via currentPlayReducer)
+   */
+  useEffect(() => {
+    if (!variationIsCompleted) {
+      return;
+    }
+    console.log('*** useEffect ***');
+    console.log('*** Variation done! ***', currentVariation);
+    Alert.alert('Variation Done!', currentVariation, [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Next',
+        onPress: () => {
+          resetGame();
+        },
+      },
+    ]);
+    //eslint-disable-next-line
+  }, [variationIsCompleted]);
 
-  // useEffect(() => {
-  //   console.log('*** useEffect 06');
-  //   console.log(
-  //     'Checking if a line is completed or not, currentLine, moveHistory.length',
-  //   );
-  //
-  //   const isLineCompleted =
-  //     currentVariation && !currentVariation.moves[moveHistory.length];
-  //   if (isLineCompleted) {
-  //     const completedVariation = currentVariation.key;
-  //     console.log('currentVariation', currentVariation);
-  //     console.log('completedVariation', completedVariation);
-  //     completeLine(completedVariation);
-  //
-  //     /**
-  //      * Refactor to make it move after accepting the alert
-  //      */
-  //     const newLine = findAndSelectVariation();
-  //     console.log('Found a new line: ', newLine);
-  //     if (newLine) {
-  //       // resetGame();
-  //       // setCurrentVariation(newLine);
-  //       if (color === 'b') {
-  //         console.log('CPU makes move');
-  //         makeCpuMove();
-  //       }
-  //     }
-  //   }
-  //   //eslint-disable-next-line
-  // }, [currentVariation, moveHistory.length]);
+  /**
+   * ****** FUNCTIONS *******
+   */
+  const makeCpuMove = () => {
+    console.log('makeCpuMove in current variation:', currentVariation);
+
+    const moves = findMoveByKeys(currentOpeningKey, currentVariation);
+
+    if (currentVariation) {
+      const nextMove = moves[moveHistory.length];
+
+      if (nextMove) {
+        console.log('CPU next Move:', nextMove);
+        console.log('old moveHistory:', moveHistory);
+        const moveResult = game.move(nextMove);
+        if (moveResult) {
+          setGame(new Chess(game.fen()));
+          setMoveHistory(prev => [...prev, nextMove]);
+          setCurrentVariationAndMoveIndex(
+            currentVariation,
+            moveHistory.length + 1,
+          );
+          setCurrentWhoseTurn('player');
+        } else {
+          console.error('Invalid CPU move:', nextMove);
+        }
+      }
+    }
+  };
 
   /**
    * Function calls
    */
   const resetGame = () => {
     console.log('Reset Game – Call');
+    setInitialized(false);
+    setMoveHistory([]);
     const newGame = new Chess(fen);
     setGame(newGame);
-    setMoveHistory([]);
-    setCurrentVariation(null);
+    resetCurrentPlay();
+    if (playerPlayingAs === 'b') {
+      const newLine = findAndSelectVariation();
+      if (newLine) {
+        setCurrentVariationAndMoveIndex(newLine.key, moveHistory.length);
+      }
+      setCurrentWhoseTurn('cpu');
+    } else {
+      // player is white
+    }
     setSelectedSquare(null);
     setPossibleMoves([]);
-    setBoard(createSquareRendering(newGame));
+    setTimeout(() => {
+      setInitialized(true);
+    }, 500);
   };
 
   const validateUserMove = move => {
-    console.log('validateUserMove');
-    const newMoveHistory = [...moveHistory, move];
-    console.log('allVariationsInOpening', allVariationsInOpening);
-    console.log('completedVariationsInOpening', completedVariationsInOpening);
+    console.log('validateUserMove, user played: ', move);
+    console.log('moveHistory: ', moveHistory); // Should log the updated move history
 
-    console.log('validateUserMove');
+    const newMoveHistory = [...moveHistory, move]; // Includes the new move
+    console.log('newMoveHistory: ', newMoveHistory); // Should log the updated move history
 
-    // Get full opening data based on the opening key
     const opening = openingData.openings.find(o => o.key === currentOpeningKey);
     if (!opening) {
       console.error('Opening not found');
       return;
     }
 
-    // Fetch completion data from state or context where this function is used
-    const completedVariationsInOpening = {}; // This should be fetched appropriately
-
-    // Filter out completed variations
     const remainingVariations = opening.variations.filter(
       variation =>
         !(
@@ -290,37 +359,28 @@ export const BoardView = ({ fen, color = 'BLACK' }) => {
           completedVariationsInOpening[variation.key].isCompleted
         ),
     );
-    console.log('remainingVariations', remainingVariations);
 
-    // Find the current variation by matching move history
-    const currentVariation = remainingVariations.find(variation => {
-      return moveHistory.every(
-        (mhMove, index) => variation.moves && variation.moves[index] === mhMove,
-      );
+    // Find the current variation by matching the new move history
+    const foundVariation = remainingVariations.find(variation => {
+      return newMoveHistory.every((mhMove, index) => {
+        return (
+          index < variation.moves.length && variation.moves[index] === mhMove
+        );
+      });
     });
 
-    if (currentVariation) {
-      console.log(
-        'Current Line:',
-        currentOpeningKey,
-        currentVariation.variationKey,
-      );
-      dispatch({
-        type: 'currentPlay/setVariation',
-        payload: {
-          variationKey: currentVariation.variationKey,
-          moveIndex: moveHistory.length,
-        },
-      });
-      const nextMoveIndex = newMoveHistory.length;
-      const nextMove = currentVariation.moves[nextMoveIndex + 1];
+    if (foundVariation) {
+      console.log('Current Line:', currentOpeningKey, foundVariation.key);
+      const nextMoveIndex = newMoveHistory.length + 1;
+      const nextMove = foundVariation.moves[nextMoveIndex]; // Adjusted to fetch the next expected move
       console.log(
         'Next Expected User-Move:',
         nextMove ? nextMove : 'End of scenario line',
       );
 
-      // setCurrentVariation(currentVariation);
+      setCurrentVariationAndMoveIndex(foundVariation.key, nextMoveIndex - 1);
       setMoveHistory(newMoveHistory);
+      setCurrentWhoseTurn('cpu');
       return true;
     } else {
       console.log('No matching line found for the move sequence.');
@@ -378,49 +438,19 @@ export const BoardView = ({ fen, color = 'BLACK' }) => {
     }
   };
 
-  const makeCpuMove = () => {
-    console.log('makeCpuMove', currentVariation);
-    const moves = findMoveByKeys(currentOpeningKey, currentVariation.key);
-    console.log('moves', moves);
-    if (currentVariation) {
-      const nextMove = moves[moveHistory.length];
-
-      if (nextMove) {
-        console.log('CPU Move:', nextMove);
-        setTimeout(() => {
-          const moveResult = game.move(nextMove);
-          if (moveResult) {
-            console.log('gm?', currentVariation);
-            dispatch({
-              type: 'currentPlay/setVariation',
-              payload: {
-                variationKey: currentVariation.key,
-                moveIndex: moveHistory.length,
-              },
-            });
-            setGame(new Chess(game.fen()));
-            setMoveHistory(prev => [...prev, nextMove]);
-          } else {
-            console.error('Invalid CPU move:', nextMove);
-          }
-        }, 400);
-      }
-    }
-  };
-
   const createSquareRendering = gameInstance => {
     const squares = [];
     for (let i = 0; i < DIMENSION; i++) {
       const row = [];
       for (let j = 0; j < DIMENSION; j++) {
-        const rank = color === 'w' ? DIMENSION - i : i + 1;
-        const fileIndex = color === 'w' ? j : DIMENSION - 1 - j;
+        const rank = playerPlayingAs === 'w' ? DIMENSION - i : i + 1;
+        const fileIndex = playerPlayingAs === 'w' ? j : DIMENSION - 1 - j;
         const square = COLUMN_NAMES[fileIndex] + rank;
         const piece = gameInstance.get(square);
         let possibleMove = false;
 
         const isBlackSquare =
-          (rank + fileIndex) % 2 === (color === 'w' ? 1 : 0);
+          (rank + fileIndex) % 2 === (playerPlayingAs === 'w' ? 1 : 0);
 
         if (piece) {
           piecesPosition[square] = piece;
@@ -461,11 +491,11 @@ export const BoardView = ({ fen, color = 'BLACK' }) => {
     const rankIndex = DIMENSION - rank;
 
     const x =
-      color === 'w'
+      playerPlayingAs === 'w'
         ? fileIndex * (screenWidth / DIMENSION)
         : (DIMENSION - 1 - fileIndex) * (screenWidth / DIMENSION);
     const y =
-      color === 'w'
+      playerPlayingAs === 'w'
         ? rankIndex * (screenWidth / DIMENSION)
         : (DIMENSION - 1 - rankIndex) * (screenWidth / DIMENSION);
 
