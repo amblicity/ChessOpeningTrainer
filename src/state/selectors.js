@@ -70,6 +70,9 @@ export const getCompletedVariationsAndOpeningName = createSelector(
   },
 );
 
+export const useCurrentOpeningKey = () =>
+  useSelector(state => state.currentPlay.selectedOpening);
+
 // React hooks to access current play information from state
 export const useCurrentOpening = () =>
   useSelector(state => state.currentPlay.selectedOpening);
@@ -91,3 +94,14 @@ export const useCurrentMoveIndex = () =>
 
 export const useWhoseTurn = () =>
   useSelector(state => state.currentPlay.whoseTurn);
+
+export const useAllVariationsInOpening = currentOpeningKey =>
+  useSelector(state =>
+    getAllVariationsByOpeningKey(state, state.currentPlay.selectedOpening),
+  );
+
+export const useCompletedVariationsInOpening = currentOpeningKey =>
+  useSelector(
+    state =>
+      state.progress.completedVariations[state.currentPlay.selectedOpening],
+  );
