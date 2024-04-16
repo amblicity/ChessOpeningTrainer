@@ -32,26 +32,58 @@ export const WelcomeScreen = () => {
 
   const [showHelp, setShowHelp] = useState(false);
 
+  const RedButton = ({ onPress, title, disabled }) => {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        style={{
+          width: '70%',
+          height: 60,
+          backgroundColor: disabled ? '#9B9B9B' : '#B24B47',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 12,
+          marginBottom: 10,
+        }}>
+        <Text
+          style={{
+            marginBottom: 5,
+            fontFamily: 'Muli-ExtraLight',
+            fontSize: 20,
+            color: '#F3EBE2',
+          }}>
+          {title}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   return openings ? (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require('../..//assets/img/header.jpg')}
+        source={require('../..//assets/img/backmock.png')}
         style={styles.image}
       />
-      <Text>MENU:</Text>
-      <TouchableOpacity
+      <RedButton
         onPress={() => {
           navigation.navigate('SelectOpening');
-        }}>
-        <Text>START</Text>
-      </TouchableOpacity>
-      <DebugView openingKey={'CaroKann'} />
-      <TouchableOpacity
+        }}
+        title={'Train openings'}
+      />
+      <RedButton
         onPress={() => {
-          setShowHelp(true);
-        }}>
-        <Text>HELP</Text>
-      </TouchableOpacity>
+          // navigation.navigate('SelectOpening');
+        }}
+        title={'Daily opening'}
+        disabled={true}
+      />
+      <RedButton
+        onPress={() => {
+          // navigation.navigate('SelectOpening');
+        }}
+        title={'Guess The Eval'}
+        disabled={true}
+      />
       {showHelp === true && (
         <BlurView
           style={styles.absolute}
@@ -86,11 +118,11 @@ const styles = {
   container: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#edf4fe',
+    backgroundColor: '#F4EAE2',
     alignItems: 'center',
   },
   image: {
-    margin: 20,
+    marginBottom: 20,
     height: '55%',
     resizeMode: 'contain',
   },

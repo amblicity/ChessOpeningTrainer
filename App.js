@@ -1,8 +1,7 @@
 import React from 'react';
-import { Button, StyleSheet, View } from 'react-native';
-import { GameProvider } from './src/state/GameContext';
+import { Button } from 'react-native';
 import { PlayOpeningView } from './src/views/PlayOpeningView';
-import { store, persistor } from './src/state/store';
+import { persistor, store } from './src/state/store';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -10,12 +9,8 @@ import { SelectOpeningView } from './src/views/SelectOpeningView';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WelcomeScreen } from './src/views/WelcomeScreen';
 import { HelpFullScreenView } from './src/views/HelpFullScreenView';
-import ChooseColorScreen from './src/views/ChooseColorScreen';
-import SwipeableImageSwitcher from './src/views/ChooseColorScreen';
 
 export const App = () => {
-  // console.log('Initial state: ', store.getState());
-  // store.dispatch({ type: 'app/initialize', payload: true });
   const appStack = createNativeStackNavigator();
 
   return (
@@ -27,20 +22,12 @@ export const App = () => {
               <appStack.Screen
                 name="Welcome"
                 component={WelcomeScreen}
-                options={{
+                options={() => ({
+                  headerRight: () => <Button title="Help" />,
                   headerTransparent: true,
-                  headerBackTitleVisible: false,
-                }}
-              />
-              <appStack.Screen
-                name="ChooseColorScreen"
-                component={SwipeableImageSwitcher}
-                options={{
-                  headerTransparent: true,
-                  headerBackVisible: false,
-                  headerBackTitleVisible: false,
                   headerTitle: '',
-                }}
+                  headerBackTitleVisible: false,
+                })}
               />
               <appStack.Screen
                 name="SelectOpening"
