@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import openingData from '../data/openingdb.json';
+import openingData from '../../data/openingdb.json';
 import {
   useAllVariationsInOpening,
   useCompletedVariationsInOpening,
@@ -11,19 +11,19 @@ import {
   useCurrentVariationCompleted,
   usePlayerPlayingAs,
   useWhoseTurn,
-} from '../state/selectors'; // Adjust the path to where your selectors are
+} from '../../state/selectors'; // Adjust the path to where your selectors are
 import { Chess } from 'chess.js';
 import Square from './Square';
 import Piece from './Piece';
 import { useNavigation } from '@react-navigation/native';
-import { findMoveByKeys } from '../utils/findMoveByKeys';
+import { findMoveByKeys } from '../../utils/findMoveByKeys';
 import {
   resetCurrentPlay,
   setOpeningAsCompleted,
   setVariationAndMoveIndex,
   setVariationAsCompleted,
   setWhoseTurn,
-} from '../state/actions';
+} from '../../state/actions';
 
 /**
  * Creating the board data

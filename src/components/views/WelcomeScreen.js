@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import openingData from '../data/openingdb.json';
+import openingData from '../../data/openingdb.json';
 import { BlurView } from '@react-native-community/blur';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -61,7 +61,7 @@ export const WelcomeScreen = () => {
   return openings ? (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require('../..//assets/img/backmock.png')}
+        source={require('../../../assets/img/backmock.png')}
         style={styles.image}
       />
       <RedButton

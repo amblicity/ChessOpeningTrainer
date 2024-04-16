@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { getOpeningsWithDetails } from '../state/selectors'; // Adjust path as needed
+import { getOpeningsWithDetails } from '../../state/selectors'; // Adjust path as needed
 
 export const SelectOpeningView = () => {
   const dispatch = useDispatch();
@@ -35,7 +35,7 @@ export const SelectOpeningView = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
         <Image
-          source={require('../..//assets/img/header.jpg')}
+          source={require('../../../assets/img/header.jpg')}
           style={styles.image}
         />
         <View style={styles.openingList}>

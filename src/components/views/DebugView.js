@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { getCompletedVariationsAndOpeningName } from '../state/selectors'; // Adjust the import path as needed
+import { getCompletedVariationsAndOpeningName } from '../../state/selectors'; // Adjust the import path as needed
 import { TouchableOpacity, Text } from 'react-native'; // Adjust the import path as needed
 
 const DebugView = ({ openingKey }) => {

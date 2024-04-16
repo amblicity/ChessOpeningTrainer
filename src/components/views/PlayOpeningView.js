@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { BoardView } from '../components/BoardView';
+import { BoardView } from '../chessboard/BoardView';
 
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -16,7 +16,7 @@ import {
   getAllVariationsByOpeningKey,
   getMovesByOpeningAndVariationKey,
   usePlayerPlayingAs,
-} from '../state/selectors';
+} from '../../state/selectors';
 
 /**
  * This is known from the previous screen

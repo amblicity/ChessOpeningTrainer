@@ -1,4 +1,4 @@
-import openingData from '../data/openingdb.json'; // Adjust the path as needed
+import openingData from '../../data/openingdb.json'; // Adjust the path as needed
 
 const initialProgressState = {
   completedVariations: {},

@@ -1,10 +1,10 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { progressReducer } from './progressReducer';
-import { currentPlayReducer } from './currentPlayReducer';
-import { appReducer } from './appReducer';
-import { dbReducer } from './dbReducer';
+import { progressReducer } from './reducer/progressReducer';
+import { currentPlayReducer } from './reducer/currentPlayReducer';
+import { appReducer } from './reducer/appReducer';
+import { dbReducer } from './reducer/dbReducer';
 
 const middlewares = [];
 
