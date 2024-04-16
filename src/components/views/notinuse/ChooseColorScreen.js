@@ -24,11 +24,11 @@ const SwipeableImageSwitcher = () => {
       {/* Image container */}
       <View style={styles.fixed}>
         <Animated.Image
-          source={require('../../../assets/play-as-white.jpg')}
+          source={require('../../../../assets/play-as-white.jpg')}
           style={styles.image}
         />
         <Animated.Image
-          source={require('../../../assets/play-as-black.jpg')}
+          source={require('../../../../assets/play-as-black.jpg')}
           style={[styles.image, { opacity: secondImageOpacity }]}
         />
       </View>

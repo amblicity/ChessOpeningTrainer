@@ -21,15 +21,15 @@ const SwipeableImageSwitcher = () => {
       {/* Image container */}
       <View style={styles.fixed}>
         <Animated.Image
-          source={require('../../../assets/test.jpg')} // First image
+          source={require('../../../../assets/test.jpg')} // First image
           style={styles.image} // First image always fully visible
         />
         <Animated.Image
-          source={require('../../../assets/test2.jpg')} // Second image
+          source={require('../../../../assets/test2.jpg')} // Second image
           style={[styles.image, { opacity: secondImageOpacity }]} // Only second image's opacity animated
         />
         <Animated.Image
-          source={require('../../../assets/test3.jpg')} // Third image
+          source={require('../../../../assets/test3.jpg')} // Third image
           style={[styles.image, { opacity: thirdImageOpacity }]} // Only third image's opacity animated
         />
       </View>

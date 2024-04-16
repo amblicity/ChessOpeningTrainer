@@ -24,7 +24,7 @@ import {
 const currentlySelectedOpening = state => state.currentPlay.selectedOpening;
 const startingPosititon = state => state.currentPlay.startingPosition;
 
-export const PlayOpeningView = () => {
+export const CurrentPlayView = () => {
   /**
    * This state is used for the ? Button at top right
    */
@@ -99,27 +99,12 @@ export const PlayOpeningView = () => {
         <Text style={styles.headerText}>{selectedOpeningName}</Text>
         <Text style={styles.headerText}>Playing as {playerPlayingAs}</Text>
       </View>
-      <BoardView fen={startingPositionFEN} />
-      {/*<View style={styles.linesList}>*/}
-      {/*  <Text style={{ color: 'black', marginBottom: 10 }}>Completed</Text>*/}
-      {/*  {completedVariations.length > 0 ? (*/}
-      {/*    completedVariations.map((line, index) => (*/}
-      {/*      <Text key={index} style={styles.headerText}>*/}
-      {/*        {line}*/}
-      {/*      </Text>*/}
-      {/*    ))*/}
-      {/*  ) : (*/}
-      {/*    <Text style={styles.headerText}>None</Text>*/}
-      {/*  )}*/}
-      {/*  <Text>----</Text>*/}
-
-      {/*  <Text style={{ color: 'black', marginBottom: 10 }}>Remaining</Text>*/}
-      {/*  {remainingVariations.map((variation, index) => (*/}
-      {/*    <Text key={index} style={styles.headerText}>*/}
-      {/*      {variation.name}*/}
-      {/*    </Text>*/}
-      {/*  ))}*/}
-      {/*</View>*/}
+      <View>
+        <BoardView fen={startingPositionFEN} />
+      </View>
+      <View>
+        <Text>Current Mode: Random</Text>
+      </View>
       {showHelp === true && (
         <BlurView
           style={styles.absolute}
@@ -151,7 +136,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#edf4fe',
+    backgroundColor: '#F4EAE2',
   },
   header: {
     marginBottom: 20,

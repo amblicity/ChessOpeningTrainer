@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'react-native';
-import { PlayOpeningView } from './src/components/views/PlayOpeningView';
+import { CurrentPlayView } from './src/components/views/CurrentPlayView';
 import { persistor, store } from './src/state/store';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SelectOpeningView } from './src/components/views/SelectOpeningView';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WelcomeScreen } from './src/components/views/WelcomeScreen';
-import { HelpFullScreenView } from './src/components/views/HelpFullScreenView';
+import { HelpFullScreenView } from './src/components/views/notinuse/HelpFullScreenView';
 
 export const App = () => {
   const appStack = createNativeStackNavigator();
@@ -33,17 +33,21 @@ export const App = () => {
                 name="SelectOpening"
                 component={SelectOpeningView}
                 options={{
+                  headerTitle: '',
                   headerTransparent: true,
                   headerBackTitleVisible: false,
+                  headerTintColor: '#6292B7',
                 }}
               />
               <appStack.Screen
                 name="Play Opening Lines"
-                component={PlayOpeningView}
+                component={CurrentPlayView}
                 options={({ navigation, route }) => ({
                   headerRight: () => <Button title="Help" />,
                   headerTransparent: true,
+                  headerTitle: '',
                   headerBackTitleVisible: false,
+                  headerTintColor: '#6292B7',
                 })}
               />
             </appStack.Group>

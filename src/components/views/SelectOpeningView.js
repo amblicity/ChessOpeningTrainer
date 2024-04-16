@@ -31,43 +31,86 @@ export const SelectOpeningView = () => {
     navigation.navigate('Play Opening Lines');
   };
 
+  const OpeningChoiceCard = ({ key, op, color }) => {
+    return (
+      <TouchableOpacity
+        style={{
+          marginTop: 10,
+          height: 125,
+          width: '100%',
+          backgroundColor: '#376897',
+          borderRadius: 12,
+          flexDirection: 'row',
+          marginBottom: 20,
+        }}
+        key={key}
+        onPress={() => setSelectedOpening(op.key, color)}>
+        <View
+          style={{
+            width: '20%',
+            backgroundColor: '#5889AD',
+            borderTopLeftRadius: 12,
+            borderBottomLeftRadius: 12,
+          }}
+        />
+        <View style={{ marginTop: 10, marginLeft: 15, width: '70%' }}>
+          <Text
+            style={{
+              fontFamily: 'Muli-Extralight',
+              fontWeight: 600,
+              fontSize: 18,
+              color: 'white',
+            }}>
+            {op.name}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Muli-Extralight',
+              fontWeight: 200,
+              color: 'white',
+              fontSize: 12,
+            }}>
+            The Caro-Kann Defense is a common defense against e4, characterized
+            by d4 and c6. It aims for a solid, yet flexible position.
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-        <Image
-          source={require('../../../assets/img/header.jpg')}
-          style={styles.image}
-        />
         <View style={styles.openingList}>
-          <Text style={{ fontFamily: 'Dosis-SemiBold', fontSize: 20 }}>
+          <Text
+            style={{
+              fontFamily: 'Muli-ExtraLight',
+              fontSize: 22,
+              fontWeight: 'regular',
+              color: '#B24B47',
+            }}>
             Playing as white:
           </Text>
           {openings
             .filter(op => op.initialPlayerColor === 'w')
             .map((op, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setSelectedOpening(op.key, 'w')}>
-                <Text>{op.name}</Text>
-              </TouchableOpacity>
+              <OpeningChoiceCard key={index} op={op} color={'w'} />
             ))}
           <View style={{ height: 20 }} />
-
-          <Text>Playing as black:</Text>
+          <Text
+            style={{
+              fontFamily: 'Muli-ExtraLight',
+              fontSize: 22,
+              fontWeight: 'regular',
+              color: '#B24B47',
+            }}>
+            Playing as black:
+          </Text>
           {openings
             .filter(op => op.initialPlayerColor === 'b')
             .map((op, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setSelectedOpening(op.key, 'b')}>
-                <Text>{op.name}</Text>
-              </TouchableOpacity>
+              <OpeningChoiceCard key={index} op={op} color={'b'} />
             ))}
-          <View style={{ height: 20 }} />
-
-          <TouchableOpacity onPress={clearProgress}>
-            <Text>RESET PROGRESS</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -77,7 +120,7 @@ export const SelectOpeningView = () => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#edf4fe',
+    backgroundColor: '#F4EAE2',
   },
   image: {
     marginTop: 30,
@@ -86,6 +129,7 @@ const styles = {
     resizeMode: 'contain',
   },
   openingList: {
+    marginTop: 10,
     width: '100%',
     paddingHorizontal: '5%',
   },

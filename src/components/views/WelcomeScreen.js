@@ -10,7 +10,7 @@ import openingData from '../../data/openingdb.json';
 import { BlurView } from '@react-native-community/blur';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import DebugView from './DebugView';
+import DebugView from './notinuse/DebugView';
 
 export const WelcomeScreen = () => {
   const navigation = useNavigation();
@@ -37,7 +37,7 @@ export const WelcomeScreen = () => {
       <TouchableOpacity
         onPress={onPress}
         style={{
-          width: '70%',
+          width: '80%',
           height: 60,
           backgroundColor: disabled ? '#9B9B9B' : '#B24B47',
           alignItems: 'center',
@@ -122,7 +122,7 @@ const styles = {
     alignItems: 'center',
   },
   image: {
-    marginBottom: 20,
+    marginBottom: 30,
     height: '55%',
     resizeMode: 'contain',
   },
