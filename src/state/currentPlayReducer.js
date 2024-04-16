@@ -5,13 +5,13 @@ const initialCurrentPlayState = {
   whoseTurn: '',
   variationKey: '',
   variationCompleted: false,
+  openingCompleted: false,
   moveIndex: 0,
 };
 
-// Helper functions
 function setSelectedOpening(state, action) {
   return {
-    ...state,
+    ...initialCurrentPlayState,
     selectedOpening: action.payload.opening,
     playerPlayingAs: action.payload.playerPlayingAs,
     whoseTurn: action.payload.playerPlayingAs === 'b' ? 'cpu' : 'player',
@@ -32,10 +32,18 @@ function setCurrentWhoseTurn(state, action) {
     whoseTurn: action.payload.whoseTurn,
   };
 }
+
 function setVariationAsCompleted(state, action) {
   return {
     ...state,
     variationCompleted: true,
+  };
+}
+
+function setOpeningAsCompleted(state, action) {
+  return {
+    ...state,
+    openingCompleted: true,
   };
 }
 
@@ -61,6 +69,8 @@ export const currentPlayReducer = (state = initialCurrentPlayState, action) => {
       return setCurrentWhoseTurn(state, action);
     case 'progress/setVariationAsCompleted':
       return setVariationAsCompleted(state, action);
+    case 'progress/setOpeningAsCompleted':
+      return setOpeningAsCompleted(state, action);
     default:
       return state;
   }
