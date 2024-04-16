@@ -4,17 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import openingData from '../data/openingdb.json';
 import {
   getAllVariationsByOpeningKey,
-  useCurrentMoveIndex,
+  useCurrentOpeningCompleted,
   useCurrentVariation,
   useCurrentVariationCompleted,
   usePlayerPlayingAs,
   useWhoseTurn,
 } from '../state/selectors'; // Adjust the path to where your selectors are
-
 import { Chess } from 'chess.js';
 import Square from './Square';
 import Piece from './Piece';
-import { setVariationAsCompleted } from '../state/actions';
+import { useNavigation } from '@react-navigation/native';
 
 /**
  * Creating the board data
@@ -25,6 +24,7 @@ const screenWidth = Dimensions.get('window').width - 32;
 
 export const BoardView = ({ fen }) => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   /**
    * Init
@@ -45,6 +45,7 @@ export const BoardView = ({ fen }) => {
   );
 
   const variationIsCompleted = useCurrentVariationCompleted();
+  const openingIsCompleted = useCurrentOpeningCompleted();
 
   /**
    * Find moves in openingData.json based on
@@ -124,6 +125,11 @@ export const BoardView = ({ fen }) => {
     );
     console.log('remaining variations', remainingVariationsInOpening);
 
+    if (remainingVariationsInOpening.length === 0) {
+      setOpeningAsCompleted();
+      return;
+    }
+
     const randomIndex = Math.floor(
       Math.random() * remainingVariationsInOpening.length,
     );
@@ -171,6 +177,11 @@ export const BoardView = ({ fen }) => {
   const setVariationAsCompleted = (variationKey, openingKey) => ({
     type: 'progress/setVariationAsCompleted',
     payload: { variationKey, openingKey },
+  });
+
+  const setOpeningAsCompleted = openingKey => ({
+    type: 'progress/setOpeningAsCompleted',
+    payload: { openingKey },
   });
 
   /**
@@ -267,6 +278,28 @@ export const BoardView = ({ fen }) => {
     }
     console.log('*** useEffect ***');
     console.log('*** Variation done! ***', currentVariation);
+
+    const opening = openingData.openings.find(o => o.key === currentOpeningKey);
+    if (!opening) {
+      console.error('Opening not found');
+      return;
+    }
+
+    const remainingVariations = opening.variations.filter(
+      variation =>
+        !(
+          completedVariationsInOpening[variation.key] &&
+          completedVariationsInOpening[variation.key].isCompleted
+        ),
+    );
+
+    console.log('REMAINING VARIATIONS?', remainingVariations);
+    if (remainingVariations.length === 0) {
+      dispatch(setOpeningAsCompleted(currentOpeningKey));
+      return;
+    }
+
+    console.log('*** useEffect continues ***');
     Alert.alert('Variation Done!', currentVariation, [
       {
         text: 'Cancel',
@@ -282,6 +315,32 @@ export const BoardView = ({ fen }) => {
     ]);
     //eslint-disable-next-line
   }, [variationIsCompleted]);
+
+  /**
+   * After completing an opening (via currentPlayReducer)
+   */
+  useEffect(() => {
+    if (!openingIsCompleted) {
+      return;
+    }
+    console.log('*** useEffect ***');
+    console.log('*** Opening done! ***', currentOpeningKey);
+    Alert.alert('Opening Done!', currentOpeningKey, [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Next',
+        onPress: () => {
+          navigation.goBack();
+          //resetGame();
+        },
+      },
+    ]);
+    //eslint-disable-next-line
+  }, [openingIsCompleted]);
 
   /**
    * ****** FUNCTIONS *******
@@ -331,6 +390,7 @@ export const BoardView = ({ fen }) => {
       setCurrentWhoseTurn('cpu');
     } else {
       // player is white
+      setCurrentWhoseTurn('player');
     }
     setSelectedSquare(null);
     setPossibleMoves([]);

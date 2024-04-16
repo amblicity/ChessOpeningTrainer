@@ -83,6 +83,9 @@ export const useCurrentVariation = () =>
 export const useCurrentVariationCompleted = () =>
   useSelector(state => state.currentPlay.variationCompleted);
 
+export const useCurrentOpeningCompleted = () =>
+  useSelector(state => state.currentPlay.openingCompleted);
+
 export const useCurrentMoveIndex = () =>
   useSelector(state => state.currentPlay.moveIndex);
 
