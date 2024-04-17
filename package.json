@@ -6,6 +6,10 @@
     "@chessopeningtrainer/shared",
     "react-native",
     "react-web",
-    "shared"
-  ]
+    "shared",
+    "foo"
+  ],
+  "overrides": {
+    "react-refresh": "0.11.0"
+  }
 }
