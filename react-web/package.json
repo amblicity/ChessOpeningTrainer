@@ -1,0 +1,44 @@
+{
+  "name": "@chessopeningtrainer/react-web",
+  "version": "0.6.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "start": "react-scripts start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.0.1",
+    "chess.js": "^1.0.0-beta.7",
+    "react": "18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.0.4",
+    "react-router-dom": "^6.22.3",
+    "redux": "^5",
+    "redux-persist": "^6.0.0",
+    "reselect": "^5.1.0"
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1",
+    "react-test-renderer": "18.2.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
