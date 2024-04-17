@@ -61,7 +61,7 @@ export const WelcomeScreen = () => {
   return openings ? (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require('../../../assets/img/backmock.png')}
+        source={require('../../assets/img/backmock.png')}
         style={styles.image}
       />
       <RedButton

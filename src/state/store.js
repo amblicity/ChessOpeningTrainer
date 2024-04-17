@@ -8,7 +8,9 @@ import { dbReducer } from './reducer/dbReducer';
 
 const middlewares = [];
 
-if (__DEV__) {
+const isDev = typeof __DEV__ !== 'undefined' ? __DEV__ : process.env.NODE_ENV;
+
+if (isDev) {
   const createDebugger = require('redux-flipper').default;
   middlewares.push(createDebugger());
 }

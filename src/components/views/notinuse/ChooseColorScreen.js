@@ -1,12 +1,5 @@
 import React, { useRef } from 'react';
-import {
-  View,
-  Animated,
-  Dimensions,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-} from 'react-native';
+import { View, Animated, Dimensions, Text, StyleSheet } from 'react-native';
 
 const SwipeableImageSwitcher = () => {
   const windowWidth = Dimensions.get('window').width;
@@ -24,11 +17,11 @@ const SwipeableImageSwitcher = () => {
       {/* Image container */}
       <View style={styles.fixed}>
         <Animated.Image
-          source={require('../../../../assets/play-as-white.jpg')}
+          source={require('../../../assets/play-as-white.jpg')}
           style={styles.image}
         />
         <Animated.Image
-          source={require('../../../../assets/play-as-black.jpg')}
+          source={require('../../../assets/play-as-black.jpg')}
           style={[styles.image, { opacity: secondImageOpacity }]}
         />
       </View>
