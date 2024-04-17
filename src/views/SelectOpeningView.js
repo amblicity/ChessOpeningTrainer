@@ -35,7 +35,7 @@ export const SelectOpeningView = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
         <Image
-          source={require('../..//assets/img/header.jpg')}
+          source={require('../assets/img/header.jpg')}
           style={styles.image}
         />
         <View style={styles.openingList}>

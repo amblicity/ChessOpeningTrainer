@@ -5,12 +5,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 import openingData from '../data/openingdb.json';
-import { BlurView } from '@react-native-community/blur';
+// import { BlurView } from '@react-native-community/blur';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import DebugView from './DebugView';
+
+function useNavigation() {
+  return { navigate: console.log };
+}
 
 export const WelcomeScreen = () => {
   const navigation = useNavigation();
@@ -35,7 +39,7 @@ export const WelcomeScreen = () => {
   return openings ? (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require('../..//assets/img/header.jpg')}
+        source={require('../assets/img/header.jpg')}
         style={styles.image}
       />
       <Text>MENU:</Text>
@@ -52,14 +56,14 @@ export const WelcomeScreen = () => {
         }}>
         <Text>HELP</Text>
       </TouchableOpacity>
-      {showHelp === true && (
+      {/* showHelp === true && (
         <BlurView
           style={styles.absolute}
           blurType="light"
           blurAmount={10}
           reducedTransparencyFallbackColor="white"
         />
-      )}
+      ) */}
       {showHelp === true && (
         <View
           style={[
