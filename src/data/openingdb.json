@@ -2,76 +2,48 @@
   "startingFEN": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   "openings": [
     {
-      "name": "Italian Opening",
-      "key": "Italian",
-      "information": "The Italian one",
-      "initialPlayerColor": "w",
-      "variations": [
-        {
-          "name": "Indian A",
-          "key": "IND_A",
-          "moves": [
-            "e4",
-            "e5",
-            "d4",
-            "d5",
-            "Nf3"
-          ],
-          "commentary": [
-            "first move", "sec move", "third move", "four"
-          ]
-        },
-        {
-          "name": "Indian B",
-          "key": "IND_B",
-          "moves": [
-            "e4",
-            "e5",
-            "d4",
-            "d5",
-            "Nc3"
-          ],
-          "commentary": [
-            "first move2", "sec move2", "third move2", "four2"
-          ]
-        }
-      ]
-    },
-    {
       "name": "Caro-Kann Defense",
       "key": "CaroKann",
       "information": "The Caro-Kann Defense is a common defense against e4, characterized by d4 and c6. It aims for a solid, yet flexible position.",
-      "initialPlayerColor": "b",
+      "initialPlayerColor": "w",
       "variations": [
         {
-          "name": "Quick Init-CaroKann",
-          "key": "CK_EXC",
+          "name": "Advance Variation",
+          "key": "CK-ADV",
+          "moves": [ "e4", "c6", "d4", "d5", "e5", "Bf5" ]
+        },
+        {
+          "name": "Advance Variation with ...c5",
+          "key": "CK-ADV-c5",
+          "moves": [ "e4", "c6", "d4", "d5", "e5", "c5", "c3", "Nc6", "Nf3", "Bg4", "Be2", "e6" ]
+        },
+        {
+          "name": "Exchange Variation",
+          "key": "CK-EXCH",
+          "moves": [ "e4", "c6", "d4", "d5", "exd5", "cxd5" ]
+        },
+        {
+          "name": "Panov-Botvinnik Attack",
+          "key": "CK-PANOV",
+          "moves": [ "e4", "c6", "d4", "d5", "exd5", "cxd5", "c4", "Nf6", "Nc3", "e6", "Nf3", "Bb4", "Bd3", "dxc4", "Bxc4", "O-O" ]
+        },
+        {
+          "name": "Tartakower Defense",
+          "key": "CK-TKN-TMB",
           "moves": [
-            "e4",
-            "c6",
-            "d4",
-            "d5",
-            "exd5",
-            "cxd5"
-          ],
-          "commentary": [
-            "first move", "sec move", "third move", "four"
+            "e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Nf6", "Nxf6+", "gxf6",
+            "Nf3", "Bg7", "Bd3", "O-O", "O-O", "Bg4", "h3", "Bh5"
           ]
         },
         {
-          "name": "Quick Init-CaroKann2",
-          "key": "CK_ADV",
-          "moves": [
-            "e4",
-            "c6",
-            "d4",
-            "d5",
-            "e5",
-            "c5"
-          ],
-          "commentary": [
-            "first move2", "sec move2", "third move2", "four2"
-          ]
+          "name": "Classical Variation",
+          "key": "CK-CLASS",
+          "moves": [ "e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Nd7", "Ngf3", "Ngf6", "Nxf6+", "Nxf6", "Bd3", "Bg4", "c3", "e6" ]
+        },
+        {
+          "name": "Fantasy Variation",
+          "key": "CK-FANT",
+          "moves": [ "e4", "c6", "d4", "d5", "f3", "e6", "Be3", "Bd6", "Qd2", "Ne7", "Nc3", "b6" ]
         }
       ]
     }

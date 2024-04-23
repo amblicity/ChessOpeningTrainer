@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
+  Image,
+  ImageBackground,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -90,20 +92,29 @@ export const CurrentPlayView = () => {
     });
   }, [currentVariationKey, currentMoveIndex]);
 
+  // const image = require('../../../assets/img/board-bg-01.jpg'
+
   /**
    * Rendering board & remaining + completed variations
    */
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <Image
+        source={require('../../../assets/img/board-bg-01.jpg')}
+        style={{
+          width: '100%',
+          height: '125%',
+          position: 'absolute',
+          top: 0,
+        }}
+        resizeMode={'stretch'}
+      />
       <View style={styles.header}>
         <Text style={styles.headerText}>{selectedOpeningName}</Text>
         <Text style={styles.headerText}>Playing as {playerPlayingAs}</Text>
       </View>
-      <View>
+      <View style={{ opacity: 1, marginTop: 28 }}>
         <BoardView fen={startingPositionFEN} />
-      </View>
-      <View>
-        <Text>Current Mode: Random</Text>
       </View>
       {showHelp === true && (
         <BlurView
@@ -128,7 +139,7 @@ export const CurrentPlayView = () => {
           </TouchableOpacity>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 

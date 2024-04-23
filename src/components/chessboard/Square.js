@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   piece: { width: '80%', height: '80%' },
-  blackSquare: { backgroundColor: 'grey' },
-  whiteSquare: { backgroundColor: 'white' },
+  blackSquare: { backgroundColor: 'grey', opacity: 0 },
+  whiteSquare: { backgroundColor: 'white', opacity: 0 },
   possibleMoveSquare: { backgroundColor: 'red' },
   selected: {
     zIndex: 100,

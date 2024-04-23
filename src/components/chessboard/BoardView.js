@@ -181,7 +181,12 @@ export const BoardView = ({ fen }) => {
 
     console.log('*** CPU DECISION ***');
     console.log('currentVariation, moveHistory', currentVariation, moveHistory);
-    makeCpuMove();
+
+    // Artificial Delay for CPU moves
+    setTimeout(() => {
+      makeCpuMove();
+    }, 1);
+
     //eslint-disable-next-line
   }, [whoseTurn, currentVariation]);
 
